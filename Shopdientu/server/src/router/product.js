@@ -1,0 +1,19 @@
+const router = require("express").Router();
+
+const ProductController = require("../controller/productController");
+
+const { verifyAccessToken, isAdmin } = require("../middlewares/verifyToken");
+
+router.get("/getAllProducts", ProductController.getAllProduct);
+router.post("/createProduct", [verifyAccessToken, isAdmin], ProductController.createProduct);
+router.get("/getDetailProduct/:pid", ProductController.getDetailProduct);
+router.put("/updateProduct/:pid", ProductController.updateProduct);
+router.delete("/deleteProduct/:pid", ProductController.deleteProduct);
+router.put("/ratings", verifyAccessToken, ProductController.ratings);
+router.post("/commentProduct", verifyAccessToken, ProductController.commentProduct);
+router.delete("/deleteComment/:pid/:cid", verifyAccessToken, ProductController.deleteComment);
+router.post("/addVariantItem", [verifyAccessToken, isAdmin], ProductController.addVariantItem);
+
+
+module.exports = router;
+
