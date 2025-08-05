@@ -1,5 +1,5 @@
 import styles from "./Home.module.css"
-import { History } from "../../../component";
+import { History, CountDown } from "../../../component";
 import clsx from "clsx";
 import { useEffect, useState } from "react"
 import { FaRegTimesCircle } from "react-icons/fa";
@@ -26,24 +26,80 @@ const Home = () => {
     const [tab, setTab] = useState(0);
     const [products, setProducts] = useState([]);
 
+    const [hour, setHour] = useState(0);
+    const [minute, setMinute] = useState(0);
+    const [second, setSecond] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setSecond(prev => {
+                if (prev > 0) return prev - 1;
+
+                setMinute(min => {
+                    if (min > 0) {
+                        setSecond(59);
+                        return min - 1;
+                    }
+
+                    setHour(h => {
+                        if (h > 0) {
+                            setMinute(59);
+                            setSecond(59);
+                            return h - 1;
+                        }
+                        setHour(0);
+                        setMinute(0);
+                        setSecond(0);
+                        fetchProducts();
+                        return 0;
+                    });
+
+                    return 0;
+                });
+
+                return 0;
+            });
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
+
     const fetchProducts = async () => {
         try {
 
             if (tab == 0) {
+                const seed = Number(new Date().toISOString().split("T")[0].replace(/-/g, ''));
                 const response = await getProducts({
-                    params: { random: "true", limit: 5 }
+                    params: { random: "true", seed, limit: 6, "totalRating[lt]": 3 }
                 });
+                const now = new Date();
+                const target = new Date();
+                target.setDate(now.getDate() + 1); // ngày hôm sau
+                target.setHours(5, 0, 0, 0); // 5:00:00 sáng
+
+                const diffInSeconds = Math.floor((target - now) / 1000);
+
+                setHour(Math.floor(diffInSeconds / 3600));
+                setMinute(Math.floor((diffInSeconds % 3600) / 60));
+                setSecond(diffInSeconds % 60);
                 return response.productDatas;
             }
+
             if (tab == 1) {
+                const date = new Date();
+                date.setFullYear(date.getFullYear() + 100); // cộng thêm 100 năm
+                const seed = Number(date.toISOString().split("T")[0].replace(/-/g, ''));
                 const response = await getProducts({
-                    params: { random: "true", limit: 5 }
+                    params: { random: "true", seed, limit: 6, "totalRating[lt]": 3 }
                 });
                 return response.productDatas;
             }
+
             const response = await getProducts({
                 params: { category: categoris[tab - 2].title }
             });
+
+            if (!categoris || !categoris.length || (tab > 1 && !categoris[tab - 2])) return [];
 
             return response.productDatas;
         } catch (error) {
@@ -57,7 +113,6 @@ const Home = () => {
             const data = await fetchProducts();
             setProducts(data);
         };
-
         loadProducts();
     }, [tab]);
 
@@ -79,7 +134,6 @@ const Home = () => {
                         className="d-flex align-items-center text-center flex-wrap overflow-auto"
                         style={{ borderBottom: "1px solid gray", gap: "8px" }}
                     >
-                        {/* Tab 0: Hình ảnh 1 */}
                         <NavLink
                             className={clsx(styles.img_khuyenmai, {
                                 [styles.action_cate]: tab === 0,
@@ -99,7 +153,6 @@ const Home = () => {
                             />
                         </NavLink>
 
-                        {/* Tab 1: Hình ảnh 2 */}
                         <NavLink
                             className={clsx(styles.img_khuyenmai, {
                                 [styles.action_cate]: tab === 1,
@@ -118,7 +171,6 @@ const Home = () => {
                                 alt="khuyenmai2"
                             />
                         </NavLink>
-
 
                         {categoris?.map((item, index) => {
                             const realIndex = index + 2;
@@ -146,6 +198,16 @@ const Home = () => {
                         <div style={{ margin: "13px 0" }}>
                             <img src="https://cdnv2.tgdd.vn/mwg-static/common/Campaign/c8/b7/c8b756baf5f990d065abf3acd1de19f6.png" style={{ objectFit: "cover" }} height={"70px"} width={"100%"} alt="img"></img>
                         </div>
+                    </div>
+
+                    <div className="m-4">
+                        {
+                            tab === 0 && <div className="d-flex gap-2 justify-content-center  align-items-center">
+                                <CountDown unit={"Giờ"} number={hour} />
+                                <CountDown unit={"Phút"} number={minute} />
+                                <CountDown unit={"Giây"} number={second} />
+                            </div>
+                        }
                     </div>
 
                     <div className="row gx-3">

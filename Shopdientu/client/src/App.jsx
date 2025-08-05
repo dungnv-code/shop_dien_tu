@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import './App.css'
 import { path } from "./ultils/path";
-import { Public, Home, Login } from "./page/public";
+import { Public, Home, Login, Blog, DetailProduct, Servicer, FAQ, Contact } from "./page/public";
 import { Route, Routes } from "react-router-dom";
 function App() {
 
@@ -12,8 +12,14 @@ function App() {
         <Routes>
           <Route path={path.PUBLIC} element={<Public />}>
             <Route path={path.HOME} element={<Home />}></Route>
-            <Route path={path.LOGIN} element={<Login />}></Route>
+
+            <Route path={path.BLOG} element={<Blog />}></Route>
+            <Route path={path.DETAIL_PRODUCT_PID_TITLE} element={<DetailProduct />}></Route>
+            <Route path={path.FAQ} element={<FAQ />}></Route>
+            <Route path={path.CONTACT} element={<Contact />}></Route>
+            <Route path={path.OUT_SERVICER} element={<Servicer />}></Route>
           </Route>
+          <Route path={path.LOGIN} element={<Login />}></Route>
         </Routes >
       </div >
     </>

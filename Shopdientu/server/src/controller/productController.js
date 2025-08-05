@@ -24,15 +24,16 @@ class ProductControlller {
     // Filtering, sorting & pagination
     getAllProduct = asyncHandler(async (req, res) => {
         const queries = { ...req.query };
-        const excludeFields = ["limit", "sort", "page", "fields", "random"];
+        const excludeFields = ["limit", "sort", "page", "fields", "random", "seed"];
         excludeFields.forEach(el => delete queries[el]);
+
         const filter = {};
         for (const key in queries) {
             const match = key.match(/^(\w+)\[(gte|gt|lte|lt)\]$/);
             if (match) {
                 const [_, field, op] = match;
                 filter[field] = filter[field] || {};
-                filter[field][`$${op}`] = Number(queries[key]);
+                filter[field][`$${op}`] = Number(req.query[key]);
             } else if (key === "title") {
                 filter.title = { $regex: queries[key], $options: "i" };
             } else {
@@ -41,55 +42,57 @@ class ProductControlller {
         }
 
         try {
+            const seedrandom = require("seedrandom");
             const isRandom = req.query.random === "true";
             const limit = Number(req.query.limit);
+            const sort = req.query.sort || "-createdAt";
+            const page = Number(req.query.page) || 1;
+            const skip = (page - 1) * limit;
+            const seed = req.query.seed || "default-seed";
 
             if (isRandom) {
-                const products = await Product.aggregate([
-                    { $match: filter },
-                    { $sample: { size: limit } }
+                const filteredProducts = await Product.find(filter).lean();
+                const rng = seedrandom(seed);
+
+                const shuffled = filteredProducts
+                    .map(p => ({ p, sortKey: rng() }))
+                    .sort((a, b) => a.sortKey - b.sortKey)
+                    .map(el => el.p);
+
+                const selected = shuffled.slice(0, limit);
+
+                return res.status(200).json({
+                    success: true,
+                    productDatas: selected,
+                    counts: selected.length,
+                    totalPages: 1,
+                    currentPage: 1,
+                });
+            } else {
+                // Xử lý truy vấn bình thường (có phân trang, sắp xếp,...)
+                const productQuery = Product.find(filter)
+                    .sort(sort)
+                    .skip(skip)
+                    .limit(limit);
+
+                const [products, total] = await Promise.all([
+                    productQuery.lean(),
+                    Product.countDocuments(filter)
                 ]);
 
                 return res.status(200).json({
                     success: true,
                     productDatas: products,
-                    counts: products.length,
-                    totalPages: 1,
-                    currentPage: 1
+                    counts: total,
+                    totalPages: Math.ceil(total / limit),
+                    currentPage: page,
                 });
             }
-
-            let query = Product.find(filter);
-
-            if (req.query.sort) {
-                const sortBy = req.query.sort.split(',').join(' ');
-                query = query.sort(sortBy);
-            }
-
-            if (req.query.fields) {
-                const fields = req.query.fields.split(',').join(' ');
-                query = query.select(fields);
-            }
-
-            const page = Number(req.query.page) || 1;
-            const skip = (page - 1) * limit;
-            query = query.skip(skip).limit(limit);
-
-            const products = await query;
-            const counts = await Product.countDocuments(filter);
-            const totalPages = Math.ceil(counts / limit);
-
-            return res.status(200).json({
-                success: true,
-                productDatas: products,
-                counts,
-                totalPages,
-                currentPage: page
-            });
         } catch (err) {
             return res.status(500).json({ success: false, message: err.message });
         }
     });
+
 
     updateProduct = asyncHandler(async (req, res) => {
         const { pid } = req.params

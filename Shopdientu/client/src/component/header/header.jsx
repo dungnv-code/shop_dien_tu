@@ -1,7 +1,8 @@
 import "./header.css"
-import { FaSearch, FaRegUser, FaShoppingCart } from "react-icons/fa";
+import { FaSearch, FaRegUser, FaShoppingCart, FaBlog, FaQuestionCircle } from "react-icons/fa";
 import { GiPositionMarker } from "react-icons/gi";
-import { IoIosArrowForward } from "react-icons/io";
+
+import { BiSolidContact } from "react-icons/bi";
 import { path } from "../../ultils/path";
 import { Link } from "react-router-dom";
 import Navbar from "../navbar/Navbar"
@@ -84,7 +85,7 @@ const Header = () => {
                     <div className="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul className="navbar-nav ms-auto mb-2 gap-3 mb-lg-0">
                             <li className="nav-item text-nowrap  hover_item">
-                                <Link className="nav-link" to="#">
+                                <Link className="nav-link" to={path.LOGIN}>
                                     <FaRegUser /> Đăng nhập
                                 </Link>
                             </li>
@@ -94,8 +95,18 @@ const Header = () => {
                                 </Link>
                             </li>
                             <li className="nav-item text-nowrap hover_item">
-                                <Link className="nav-link" to="#">
-                                    <GiPositionMarker /> Địa chỉ <IoIosArrowForward />
+                                <Link className="nav-link" to={path.BLOG}>
+                                    <FaBlog /> Blog
+                                </Link>
+                            </li>
+                            <li className="nav-item text-nowrap hover_item">
+                                <Link className="nav-link" to={path.FAQ}>
+                                    <FaQuestionCircle /> FAQS
+                                </Link>
+                            </li>
+                            <li className="nav-item text-nowrap hover_item">
+                                <Link className="nav-link" to={path.CONTACT}>
+                                    <BiSolidContact /> Liên hệ
                                 </Link>
                             </li>
                         </ul>

@@ -1,5 +1,5 @@
 import styles from "./Footer.module.css"
-import { useEffect } from "react";
+import { useEffect, memo } from "react";
 
 const Footer = () => {
     useEffect(() => {
@@ -100,4 +100,4 @@ const Footer = () => {
 
 
 
-export default Footer;
+export default memo(Footer);

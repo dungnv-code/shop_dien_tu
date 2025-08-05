@@ -4,7 +4,7 @@ const ProductController = require("../controller/productController");
 
 const { verifyAccessToken, isAdmin } = require("../middlewares/verifyToken");
 
-const uploadder = require("../config/uploadCloudinary")
+const uploadder = require("../config/uploadCloudinary");
 
 router.get("/getAllProducts", ProductController.getAllProduct);
 router.post("/createProduct", [verifyAccessToken, isAdmin], ProductController.createProduct);
