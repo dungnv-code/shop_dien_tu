@@ -1,0 +1,31 @@
+.content_home {
+    padding: 0 30px;
+    height: 100%;
+    background-color: #f2f4f7;
+}
+
+.position_img_header {
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translateY(70%);
+}
+
+.img_khuyenmai {
+    flex: 1;
+}
+
+.action_cate {
+    border-bottom: 3px solid #F79009 !important;
+    background-color: #FFF6E3 !important;
+}
+
+.custom-col {
+    width: 20%;
+    /* 100% / 5 */
+    padding-left: 0.75rem;
+    /* tương đương gx-3 */
+    padding-right: 0.75rem;
+    margin-bottom: 1rem;
+    /* nếu muốn có khoảng cách dưới */
+}

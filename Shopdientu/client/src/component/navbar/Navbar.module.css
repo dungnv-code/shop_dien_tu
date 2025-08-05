@@ -1,0 +1,11 @@
+.hover_item {
+    padding: 5px 10px;
+    width: max-content;
+    transition: all 0.3s ease;
+}
+
+.hover_item:hover {
+    background-color: #fe9;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}

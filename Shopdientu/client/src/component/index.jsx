@@ -1,0 +1,5 @@
+export { default as Header } from "./header/header"
+export { default as Footer } from "./foooter/Footer"
+export { default as Silder } from "./slider/Slider"
+export { default as History } from "./history/History"
+export { default as Product } from "./product/product"

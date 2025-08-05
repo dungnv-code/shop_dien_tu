@@ -24,59 +24,72 @@ class ProductControlller {
     // Filtering, sorting & pagination
     getAllProduct = asyncHandler(async (req, res) => {
         const queries = { ...req.query };
-        const exCludeFields = ["limit", "sort", "page", "field"];
-        exCludeFields.forEach(el => delete queries[el]);
-
+        const excludeFields = ["limit", "sort", "page", "fields", "random"];
+        excludeFields.forEach(el => delete queries[el]);
         const filter = {};
-        Object.keys(queries).forEach(key => {
+        for (const key in queries) {
             const match = key.match(/^(\w+)\[(gte|gt|lte|lt)\]$/);
             if (match) {
-                const field = match[1];
-                const operator = `$${match[2]}`;
-                const value = Number(queries[key]);
-                if (!filter[field]) filter[field] = {};
-                filter[field][operator] = value;
+                const [_, field, op] = match;
+                filter[field] = filter[field] || {};
+                filter[field][`$${op}`] = Number(queries[key]);
+            } else if (key === "title") {
+                filter.title = { $regex: queries[key], $options: "i" };
+            } else {
+                filter[key] = queries[key];
             }
-        });
-
-        // Tìm theo tiêu đề
-        if (queries?.title) {
-            filter.title = { $regex: queries.title, $options: "i" };
         }
 
         try {
-            let queryCommand = Product.find(filter); // ❗ Không await
+            const isRandom = req.query.random === "true";
+            const limit = Number(req.query.limit);
 
-            // Sắp xếp
-            if (req.query?.sort) {
-                const sortBy = req.query.sort.split(',').join(' ');
-                queryCommand = queryCommand.sort(sortBy);
+            if (isRandom) {
+                const products = await Product.aggregate([
+                    { $match: filter },
+                    { $sample: { size: limit } }
+                ]);
+
+                return res.status(200).json({
+                    success: true,
+                    productDatas: products,
+                    counts: products.length,
+                    totalPages: 1,
+                    currentPage: 1
+                });
             }
 
-            if (req.query?.fields) {
-                const fieldss = req.query.fields.split(',').join(' ');
-                queryCommand = queryCommand.select(fieldss);
+            let query = Product.find(filter);
+
+            if (req.query.sort) {
+                const sortBy = req.query.sort.split(',').join(' ');
+                query = query.sort(sortBy);
+            }
+
+            if (req.query.fields) {
+                const fields = req.query.fields.split(',').join(' ');
+                query = query.select(fields);
             }
 
             const page = Number(req.query.page) || 1;
-            const limit = Number(req.query.limit) || 10;
             const skip = (page - 1) * limit;
+            query = query.skip(skip).limit(limit);
 
-            queryCommand = queryCommand.skip(skip).limit(limit);
-
-            const products = await queryCommand;
+            const products = await query;
             const counts = await Product.countDocuments(filter);
+            const totalPages = Math.ceil(counts / limit);
 
             return res.status(200).json({
                 success: true,
                 productDatas: products,
-                counts
+                counts,
+                totalPages,
+                currentPage: page
             });
         } catch (err) {
             return res.status(500).json({ success: false, message: err.message });
         }
     });
-
 
     updateProduct = asyncHandler(async (req, res) => {
         const { pid } = req.params
@@ -100,10 +113,8 @@ class ProductControlller {
     ratings = asyncHandler(async (req, res) => {
         const { _id } = req.user;
         const { pid, star } = req.body;
-
         const product = await Product.findById(pid);
         const isratings = product.ratings.find((rating) => { return rating.postedBy.toString() == _id.toString() })
-
         if (isratings) {
             isratings.star = star;
             await product.save();
@@ -111,10 +122,9 @@ class ProductControlller {
             product.ratings.push({ star, postedBy: _id });
             await product.save();
         }
-
         const totalRatings = product.ratings.length;
         const totalStars = product.ratings.reduce((sum, rating) => sum + rating.star, 0);
-        product.totalRating = (totalStars / totalRatings).toFixed(1); // Giữ 1 chữ số thập phân
+        product.totalRating = (totalStars / totalRatings).toFixed(1);
 
         await product.save();
 
@@ -127,11 +137,7 @@ class ProductControlller {
     commentProduct = asyncHandler(async (req, res) => {
         const { _id } = req.user;
         const { pid, comment } = req.body;
-
-        // const Product = await Product.findById(pid);
-
         const commentNew = await Product.findByIdAndUpdate(pid, { $push: { comments: { comment, postedBy: _id } } }, { new: true });
-
         res.status(200).json({
             mes: "success",
             data: commentNew
@@ -149,7 +155,6 @@ class ProductControlller {
         );
         if (!comment) return res.status(404).json({ mes: "Bình luận không tồn tại" });
 
-        // Kiểm tra quyền nếu muốn (tuỳ chọn)
         if (
             comment.postedBy.toString() !== req.user._id.toString() &&
             req.user.role !== "admin"
@@ -157,7 +162,6 @@ class ProductControlller {
             return res.status(403).json({ mes: "Không có quyền xoá bình luận này" });
         }
 
-        // Xoá comment
         product.comments = product.comments.filter(
             (c) => c._id.toString() !== cid
         );
@@ -211,6 +215,15 @@ class ProductControlller {
         }
     });
 
+    upLoadImage = asyncHandler(async (req, res) => {
+        const { pid } = req.params;
+        if (!req.file) throw new Error("Thiếu đầu vào");
+        const reponse = await Product.findByIdAndUpdate(pid, { image: req.file.path }, { new: true });
+        res.status(200).json({
+            mes: "Success",
+            data: reponse
+        })
+    })
 }
 
 module.exports = new ProductControlller;

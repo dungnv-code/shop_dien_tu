@@ -1,0 +1,8 @@
+.hover_item {
+    border-radius: 10px;
+    width: max-content;
+}
+
+.hover_item:hover {
+    background-color: #fe9;
+}
