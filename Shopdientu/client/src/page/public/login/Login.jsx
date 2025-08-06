@@ -1,6 +1,22 @@
 import "./Login.css"
-
+import { Input, Button } from "../../../component";
+import { useState } from "react";
 const Login = () => {
+
+    const [payload, setPayload] = useState({
+        firstname: "",
+        lastname: "",
+        password: "",
+        email: "",
+    });
+
+    const [isRegister, setRegister] = useState(false);
+
+    const hanleSubmit = (e) => {
+        e.preventDefault();
+        console.log(payload)
+    }
+
     return <>
         <div style={{ position: "relative" }}>
             <img
@@ -12,32 +28,39 @@ const Login = () => {
                 style={{
                     position: "absolute",
                     top: "100px",
-                    left: "5vw",
+                    left: "10vw",
                     backgroundColor: "white",
-                    padding: "20px",
+                    padding: "30px",
                     borderRadius: "10px",
-
+                    width: "30%"
                 }}
             >
-                <div className="text-center text-gray" style={{ fontWeight: "bold" }}>
-                    LOGIN
+                <div className="text-center text-gray" style={{ fontSize: "24px", fontWeight: "bold" }}>
+                    {isRegister ? "Đăng kí" : "ĐĂNG NHẬP"}
                 </div>
-                <form>
-                    <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"></input>
-                        <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                <form >
+                    {
+                        isRegister && <div>
+                            <div className="mb-3">
+                                <Input type="text" name={"firstname"} value={payload.firstname} setValue={setPayload} placeholder={"Họ và tên đệm"} />
+                            </div>
+                            <div className="mb-3">
+                                <Input type="text" name={"lastname"} value={payload.lastname} setValue={setPayload} placeholder={"Tên"} />
+                            </div>
+                        </div>
+                    }
+                    <div className="mb-3">
+                        <Input type="text" name={"email"} value={payload.email} setValue={setPayload} placeholder={"Email"} />
                     </div>
-                    <div class="mb-3">
-                        <label for="exampleInputPassword1" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="exampleInputPassword1"></input>
+                    <div className="mb-3">
+                        <Input type="password" name={"password"} value={payload.password} setValue={setPayload} placeholder={"Password"} />
                     </div>
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="exampleCheck1"></input>
-                        <label class="form-check-label" for="exampleCheck1">Check me out</label>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <Button name={isRegister ? "Đăng kí" : "Đăng nhập"} hanleOnclick={hanleSubmit} />
                 </form>
+                <div className="d-flex justify-content-between">
+                    {isRegister ? <div></div> : <div>Quên mật khẩu</div>}
+                    {isRegister ? (<><div onClick={() => { setRegister(false) }}>quay lại đăng nhập</div></>) : <>    <div onClick={() => { setRegister(true) }}>Tạo tài khoản mới</div></>}
+                </div>
             </div>
         </div>
 
