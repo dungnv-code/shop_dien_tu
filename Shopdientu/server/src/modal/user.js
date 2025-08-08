@@ -1,16 +1,12 @@
 const mongoose = require('mongoose'); // Erase if already required
 const bcrypt = require('bcrypt')
-const crypto = require('crypto')
+const crypto = require('crypto');
+const { type } = require('os');
 
 
 var userSchema = new mongoose.Schema({
-    firstname: {
-        type: String,
-        required: true,
-    },
-    lastname: {
-        type: String,
-        required: true,
+    name: {
+        type: String, require: true
     },
     email: {
         type: String,
@@ -19,7 +15,7 @@ var userSchema = new mongoose.Schema({
     },
     mobile: {
         type: String,
-        required: true,
+        require: true,
         unique: true,
     },
     password: {
@@ -79,6 +75,9 @@ var userSchema = new mongoose.Schema({
     },
     passwordResetExpires: {
         type: String
+    },
+    registerToken: {
+        type: String,
     }
 }, {
     timestamps: true

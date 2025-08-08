@@ -5,11 +5,11 @@ import { getCategoriProduct } from "../../api/Categori";
 import { toSlug } from "../../ultils/helper";
 import { NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCategoris } from "../../redux/Slice/asyncActionUser";
+import { getCategoris } from "../../redux/Slice/asyncActionProducts";
 const Navbar = () => {
 
     const dispatch = useDispatch();
-    const categoris = useSelector((state) => { return state.app.categoris });
+    // const categoris = useSelector((state) => { return state.app.categoris });
 
     useEffect(() => {
         const fetchData = async () => {
@@ -24,7 +24,7 @@ const Navbar = () => {
 
 
     return <>
-        <div className="d-flex justify-content-center gap-4" style={{
+        {/* <div className="d-flex justify-content-center gap-4" style={{
             backgroundColor: "#ffd400", padding: "0 30px", fontSize: "20px",
         }}>
             {
@@ -35,7 +35,7 @@ const Navbar = () => {
                     </NavLink>
                 })
             }
-        </div >
+        </div > */}
     </>
 }
 

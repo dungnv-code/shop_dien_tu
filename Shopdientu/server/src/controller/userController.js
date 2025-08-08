@@ -2,37 +2,93 @@ const User = require('../modal/user')
 const asyncHandler = require('express-async-handler')
 const { generateAccessToken, generateRefreshToken } = require('../middlewares/jwt.js')
 const jwt = require('jsonwebtoken')
+const uniqid = require('uniqid');
 const sendMail = require('../ultils/sendMail')
+
 const crypto = require('crypto')
 
 class UserController {
 
-    register = asyncHandler(async (req, res) => {
-        const { email, password, firstname, lastname } = req.body
-        if (!email || !password || !lastname || !firstname)
-            return res.status(400).json({
-                sucess: false,
-                mes: 'Missing inputs'
-            })
-
-        const user = await User.findOne({ email })
-        if (user) throw new Error('User has existed')
-        else {
-            const newUser = await User.create(req.body)
-            return res.status(200).json({
-                sucess: newUser ? true : false,
-                mes: newUser ? 'Register is successfully. Please go login~' : 'Something went wrong'
-            })
-        }
-    })
+    // register = asyncHandler(async (req, res) => {
+    //     const { email, password, name } = req.body
+    //     if (!email || !password || !name)
+    //         return res.status(400).json({
+    //             sucess: false,
+    //             mes: 'Thiếu đầu vào'
+    //         })
+    //     const user = await User.findOne({ email })
+    //     if (user) throw new Error('Người dùng đã tồn tại')
+    //     else {
+    //         const newUser = await User.create(req.body)
+    //         return res.status(200).json({
+    //             sucess: newUser ? true : false,
+    //             mes: newUser ? 'Đăng kí thành công. Vui lòng đăng nhập' : 'Đã có lỗi xảy ra'
+    //         })
+    //     }
+    // })
     // Refresh token => Cấp mới access token
     // Access token => Xác thực người dùng, quân quyên người dùng
+
+    register = asyncHandler(async (req, res) => {
+        const { email, password, name } = req.body
+        if (!email || !password || !name)
+            return res.status(400).json({
+                sucess: false,
+                mes: 'Thiếu đầu vào'
+            })
+        const user = await User.findOne({ email })
+        if (user) throw new Error('Người dùng đã tồn tại')
+
+        const token = uniqid();
+        // lưu data body và cookie
+        res.cookie('dataRegister', { ...req.body, token }, { httpOnly: true, maxAge: 15 * 60 * 1000 });
+
+        const html = `Xin vui lòng click vào link dưới đây để hoàn tất đăng kí.Link này sẽ hết hạn sau 15 phút kể từ bây giờ.
+         <a href=${process.env.SERVER_URL}/api/user/finalRegister/${token}>Click here</a>`
+        const data = {
+            email,
+            html,
+            subject: "Hoàn tất đăng kí Shop Điện tử DUNGNV"
+        }
+        const rs = await sendMail(data);
+        return res.status(200).json({
+            success: true,
+            mes: "Vui lòng check email để hoàn tất đăng kí",
+        })
+    })
+
+    finalRegister = asyncHandler(async (req, res) => {
+        const data = req.cookies["dataRegister"];
+        const { token } = req.params;
+        if (!data || token != data.token) {
+            return res.redirect(`${process.env.CLIENT_URL}/finalRegister/0`)
+        }
+
+        const newUser = await User.create({
+            name: data.name,
+            email: data.email,
+            password: data.password,
+            mobile: data.mobile
+        })
+
+        if (newUser) {
+            res.clearCookie('dataRegister');
+            return res.redirect(`${process.env.CLIENT_URL}/finalRegister/1`)
+        } else {
+            return res.redirect(`${process.env.CLIENT_URL}/finalRegister/0`)
+        }
+        // return res.status(200).json({
+        //     sucess: newUser ? true : false,
+        //     mes: newUser ? 'Đăng kí thành công. Vui lòng đăng nhập' : 'Đã có lỗi xảy ra'
+        // })
+    })
+
     login = asyncHandler(async (req, res) => {
         const { email, password } = req.body
         if (!email || !password)
             return res.status(400).json({
                 sucess: false,
-                mes: 'Missing inputs'
+                mes: 'Thiếu đầu vào'
             })
         // plain object
         const response = await User.findOne({ email })
@@ -63,7 +119,7 @@ class UserController {
         const user = await User.findById(_id).select('-refreshToken -password -role')
         return res.status(200).json({
             success: user ? true : false,
-            rs: user ? user : 'User not found'
+            rs: user ? user : 'Không tìm thấy người dùng'
         })
     })
 
@@ -72,7 +128,7 @@ class UserController {
         const cookie = req.cookies
         console.log(cookie);
         // Check xem có token hay không
-        if (!cookie && !cookie.refreshToken) throw new Error('No refresh token in cookies')
+        if (!cookie && !cookie.refreshToken) throw new Error('Không tìm thấy refresh token trong cookies')
         // Check token có hợp lệ hay không
         const rs = await jwt.verify(cookie.refreshToken, process.env.JWT_REFRESH_SECRET)
         const response = await User.findOne({ _id: rs._id, refreshToken: cookie.refreshToken })
@@ -84,7 +140,7 @@ class UserController {
 
     logout = asyncHandler(async (req, res) => {
         const cookie = req.cookies
-        if (!cookie || !cookie.refreshToken) throw new Error('No refresh token in cookies')
+        if (!cookie || !cookie.refreshToken) throw new Error('Không tìm thấy refresh token trong cookies')
         // Xóa refresh token ở db
         await User.findOneAndUpdate({ refreshToken: cookie.refreshToken }, { refreshToken: '' }, { new: true })
         // Xóa refresh token ở cookie trình duyệt
@@ -94,24 +150,24 @@ class UserController {
         })
         return res.status(200).json({
             success: true,
-            mes: 'Logout is done'
+            mes: 'Đăng xuất thành công'
         })
     })
 
     forgotPassword = asyncHandler(async (req, res) => {
         const { email } = req.query
         console.log(email)
-        if (!email) throw new Error('Missing email')
+        if (!email) throw new Error('Thiếu email')
         const user = await User.findOne({ email })
-        if (!user) throw new Error('User not found')
+        if (!user) throw new Error('Không tìm thấy người dùng')
         const resetToken = user.createPasswordChangedToken()
         await user.save()
 
-        const html = `Xin vui lòng click vào link dưới đây để thay đổi mật khẩu của bạn.Link này sẽ hết hạn sau 15 phút kể từ bây giờ. <a href=${process.env.URL_SERVER}/api/user/reset-password/${resetToken}>Click here</a>`
+        const html = `Xin vui lòng click vào link dưới đây để thay đổi mật khẩu của bạn.Link này sẽ hết hạn sau 15 phút kể từ bây giờ. <a href=${process.env.SERVER_URL}/api/user/reset-password/${resetToken}>Click here</a>`
 
         const data = {
             email,
-            html
+            html, subject: "Quên mật khẩu"
         }
         const rs = await sendMail(data)
         return res.status(200).json({
@@ -122,10 +178,10 @@ class UserController {
 
     resetPassword = asyncHandler(async (req, res) => {
         const { password, token } = req.body
-        if (!password || !token) throw new Error('Missing imputs')
+        if (!password || !token) throw new Error('Thiếu đầu vào')
         const passwordResetToken = crypto.createHash('sha256').update(token).digest('hex')
         const user = await User.findOne({ passwordResetToken, passwordResetExpires: { $gt: Date.now() } })
-        if (!user) throw new Error('Invalid reset token')
+        if (!user) throw new Error('Reset Token không hợp lệ')
         user.password = password
         user.passwordResetToken = undefined
         user.passwordChangedAt = Date.now()
@@ -133,7 +189,7 @@ class UserController {
         await user.save()
         return res.status(200).json({
             success: user ? true : false,
-            mes: user ? 'Updated password' : 'Something went wrong'
+            mes: user ? 'Đổi mật khẩu thành công' : 'Đã có lỗi xảy ra'
         })
     })
 
@@ -151,29 +207,28 @@ class UserController {
         const response = await User.findByIdAndDelete(_id)
         return res.status(200).json({
             success: response ? true : false,
-            deletedUser: response ? `User with email ${response.email} deleted` : 'No user delete'
+            deletedUser: response ? `Người dùng với email ${response.email} đã xoá` : 'Không tìm thấy người dùng'
         })
     })
 
     updateUser = asyncHandler(async (req, res) => {
         // 
         const { _id } = req.user
-        if (!_id || Object.keys(req.body).length === 0) throw new Error('Missing inputs')
+        if (!_id || Object.keys(req.body).length === 0) throw new Error('Thiếu đầu vào')
         const response = await User.findByIdAndUpdate(_id, req.body, { new: true }).select('-password -role -refreshToken')
         return res.status(200).json({
             success: response ? true : false,
-            updatedUser: response ? response : 'Some thing went wrong'
+            updatedUser: response ? response : 'Đã có lỗi xảy ra'
         })
     })
 
-
     updateUserByAdmin = asyncHandler(async (req, res) => {
         const { uid } = req.params
-        if (Object.keys(req.body).length === 0) throw new Error('Missing inputs')
+        if (Object.keys(req.body).length === 0) throw new Error('Thiếu đầu vào')
         const response = await User.findByIdAndUpdate(uid, req.body, { new: true }).select('-password -role -refreshToken')
         return res.status(200).json({
             success: response ? true : false,
-            updatedUser: response ? response : 'Some thing went wrong'
+            updatedUser: response ? response : 'Đã có lỗi xảy ra'
         })
     })
 

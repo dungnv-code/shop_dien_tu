@@ -6,7 +6,6 @@ export const getCategoris = createAsyncThunk(
     async (data, { rejectWithValue }) => {
         try {
             const response = await getCategoriProduct();
-
             if (response?.mes !== "Success") {
                 return rejectWithValue(response.data);
             }

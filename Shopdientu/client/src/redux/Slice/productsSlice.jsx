@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
-import * as action from "./asyncActionUser";
+import * as action from "./asyncActionProducts";
 
-export const UserSlice = createSlice({
+export const ProductSlice = createSlice({
     name: 'app',
     initialState: {
         categoris: null,
@@ -9,9 +9,7 @@ export const UserSlice = createSlice({
     },
 
     reducers: {
-
     },
-
     extraReducers: (builder) => {
         builder.addCase(action.getCategoris.fulfilled, (state, action) => {
             state.isLoading = false;
@@ -22,9 +20,8 @@ export const UserSlice = createSlice({
             state.errorMessage = action.payload.message;
         })
     }
-
 })
 
-export const { updateUser, resetUser } = UserSlice.actions;
+export const { updateUser, resetUser } = ProductSlice.actions;
 
-export default UserSlice.reducer;
+export default ProductSlice.reducer;

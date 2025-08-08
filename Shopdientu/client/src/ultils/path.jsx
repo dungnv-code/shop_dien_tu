@@ -10,5 +10,6 @@ export const path = {
     CONTACT: "lien-he",
     DETAIL_PRODUCT_PID_TITLE: "san-pham/:pid/:title",
     DETAIL_PRODUCT: "san-pham",
+    FINAl_REGISTER: "finalRegister/:status",
 }
 

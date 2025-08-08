@@ -22,7 +22,7 @@ var settings = {
 const Home = () => {
 
     const [hideimg, setHideimg] = useState(true);
-    const categoris = useSelector((state) => { return state.app.categoris });
+    const categoris = useSelector((state) => { return state.app?.categoris });
     const [tab, setTab] = useState(0);
     const [products, setProducts] = useState([]);
 
