@@ -1,0 +1,14 @@
+.custom-input {
+    border: none;
+    border-bottom: 2px solid #ccc;
+    border-radius: 0;
+    outline: none;
+    box-shadow: none;
+}
+
+.custom-input:focus {
+    border-bottom: 2px solid #007bff;
+    /* màu xanh dương Bootstrap */
+    outline: none;
+    box-shadow: none;
+}

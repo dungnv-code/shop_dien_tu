@@ -10,3 +10,18 @@ export const RegisterUser = async (data) => {
     const response = await axios.post("/user/register", data);
     return response; // response là data
 }
+
+export const finalRegisterUser = async (token) => {
+    const response = await axios.put(`/user/finalRegister/${token}`);
+    return response;
+}
+
+export const ForgotPasswordUser = async (data) => {
+    const response = await axios.post("/user/forgotPassword", data);
+    return response;
+}
+
+export const ResetPasswordUser = async (data) => {
+    const response = await axios.put("/user/resetPassword", data);
+    return response;
+}

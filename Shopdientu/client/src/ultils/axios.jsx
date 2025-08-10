@@ -1,35 +1,29 @@
 import axios from "axios";
 import Swal from "sweetalert2";
+// import { loadingController } from "./loadingController";
 
-const instance = axios.create({
-    baseURL: import.meta.env.VITE_API_SERVER,
-    // timeout: 10000, // tùy ý
+const instance = axios.create({ baseURL: import.meta.env.VITE_API_SERVER });
+
+instance.interceptors.request.use((config) => {
+
+    // loadingController.setLoading(true);
+    // loadingController.setLoadingText(config.loadingText || "Đang xử lý...");
+    return config;
 });
 
-// request interceptor (giữ nguyên)
-instance.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem("access_token");
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => Promise.reject(error)
-);
-
-// IMPORTANT: gắn response interceptor vào 'instance', không phải global axios
 instance.interceptors.response.use(
     (response) => {
-        // Thành công → trả về data trực tiếp
+
+        // loadingController.setLoading(false);
         return response.data;
     },
     (error) => {
-        // Nếu không có response (ví dụ mất mạng), xử lý fallback
+        // console.log("axios error -> setLoading false");
+        // loadingController.setLoading(false);
+
         const errData = error.response?.data || { mes: "Lỗi kết nối server" };
         const status = error.response?.status;
 
-        // Hiển thị thông báo lỗi
         Swal.fire({
             icon: "error",
             title: status ? `Lỗi ${status}` : "Lỗi kết nối",
@@ -37,7 +31,6 @@ instance.interceptors.response.use(
             confirmButtonText: "OK",
         });
 
-        // Reject để bên ngoài có thể catch
         return Promise.reject(errData);
     }
 );

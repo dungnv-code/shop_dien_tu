@@ -4,11 +4,11 @@ const { generateAccessToken, generateRefreshToken } = require('../middlewares/jw
 const jwt = require('jsonwebtoken')
 const uniqid = require('uniqid');
 const sendMail = require('../ultils/sendMail')
-
+const makeToken = require("../ultils/maketoken.js")
 const crypto = require('crypto')
 
 class UserController {
-
+    // truyền thống
     // register = asyncHandler(async (req, res) => {
     //     const { email, password, name } = req.body
     //     if (!email || !password || !name)
@@ -29,9 +29,65 @@ class UserController {
     // Refresh token => Cấp mới access token
     // Access token => Xác thực người dùng, quân quyên người dùng
 
+    // xác thực email 
+    // register = asyncHandler(async (req, res) => {
+    //     const { email, password, name } = req.body
+    //     if (!email || !password || !name)
+    //         return res.status(400).json({
+    //             sucess: false,
+    //             mes: 'Thiếu đầu vào'
+    //         })
+    //     const user = await User.findOne({ email })
+    //     if (user) throw new Error('Người dùng đã tồn tại')
+
+    //     const token = uniqid();
+    //     // lưu data body và cookie
+    //     res.cookie('dataRegister', { ...req.body, token }, { httpOnly: true, maxAge: 15 * 60 * 1000 });
+
+    //     const html = `Xin vui lòng click vào link dưới đây để hoàn tất đăng kí.Link này sẽ hết hạn sau 15 phút kể từ bây giờ.
+    //      <a href=${process.env.SERVER_URL}/api/user/finalRegister/${token}>Click here</a>`
+    //     const data = {
+    //         email,
+    //         html,
+    //         subject: "Hoàn tất đăng kí Shop Điện tử DUNGNV"
+    //     }
+    //     const rs = await sendMail(data);
+    //     return res.status(200).json({
+    //         success: true,
+    //         mes: "Vui lòng check email để hoàn tất đăng kí",
+    //     })
+    // })
+
+    //   finalRegister = asyncHandler(async (req, res) => {
+    //     const data = req.cookies["dataRegister"];
+    //     const token = req.params.token;
+    //     console.log(token);
+    //     console.log(data);
+    //     if (!data || token !== data.token) {
+    //         res.clearCookie('dataRegister');
+    //         return res.redirect(`${process.env.CLIENT_URL}/finalRegister/0`)
+    //     }
+
+    //     const newUser = await User.create({
+    //         name: data.name,
+    //         email: data.email,
+    //         password: data.password,
+    //         mobile: data.mobile
+    //     })
+    //     if (newUser) {
+    //         res.clearCookie('dataRegister');
+    //         return res.redirect(`${process.env.CLIENT_URL}/finalRegister/1`)
+    //     } else {
+    //         res.clearCookie('dataRegister');
+    //         return res.redirect(`${process.env.CLIENT_URL}/finalRegister/0`)
+    //     }
+    // })
+
+
+    // xác thực email theo code
     register = asyncHandler(async (req, res) => {
-        const { email, password, name } = req.body
-        if (!email || !password || !name)
+        const { email, password, name, mobile } = req.body
+        if (!email || !password || !name || !mobile)
             return res.status(400).json({
                 sucess: false,
                 mes: 'Thiếu đầu vào'
@@ -39,48 +95,70 @@ class UserController {
         const user = await User.findOne({ email })
         if (user) throw new Error('Người dùng đã tồn tại')
 
-        const token = uniqid();
+        const token = makeToken(10);
+        const emailEdi = btoa(email) + "@" + token;
         // lưu data body và cookie
-        res.cookie('dataRegister', { ...req.body, token }, { httpOnly: true, maxAge: 15 * 60 * 1000 });
+        const newUser = await User.create({
+            email: emailEdi, password, name, mobile
+        })
 
-        const html = `Xin vui lòng click vào link dưới đây để hoàn tất đăng kí.Link này sẽ hết hạn sau 15 phút kể từ bây giờ.
-         <a href=${process.env.SERVER_URL}/api/user/finalRegister/${token}>Click here</a>`
-        const data = {
-            email,
-            html,
-            subject: "Hoàn tất đăng kí Shop Điện tử DUNGNV"
+        if (newUser) {
+            const html = `<h2>Mật khẩu đăng kí</h2></br><blockquite>${token}</blockquite>`
+            const data = {
+                email,
+                html,
+                subject: "Xác nhận đăng kí account tại SHOP Điện tử DUNGNV"
+            }
+            const rs = await sendMail(data);
         }
-        const rs = await sendMail(data);
+        setInterval(async () => {
+            await User.deleteOne({ email: emailEdi });
+        }, [15 * 60 * 1000])
+
         return res.status(200).json({
             success: true,
-            mes: "Vui lòng check email để hoàn tất đăng kí",
+            mes: "Vui lòng check code trong email để hoàn tất đăng kí",
         })
     })
 
     finalRegister = asyncHandler(async (req, res) => {
-        const data = req.cookies["dataRegister"];
-        const { token } = req.params;
-        if (!data || token != data.token) {
-            return res.redirect(`${process.env.CLIENT_URL}/finalRegister/0`)
+        const token = req.params.token;
+
+        function escapeRegex(str) {
+            return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+        const re = new RegExp('@' + escapeRegex(token) + '$', 'i'); // 'i' nếu muốn không phân biệt hoa thường
+
+        const users = await User.find({ email: { $regex: re } });
+
+        if (users.length == 0) {
+            throw new Error('Mã đăng kí đã hết hạn hoặc không chính xác!')
+        } else {
+
+            users[0].email = atob(users[0]?.email?.split('@')[0]);
+            users[0].save();
         }
 
-        const newUser = await User.create({
-            name: data.name,
-            email: data.email,
-            password: data.password,
-            mobile: data.mobile
+        return res.status(200).json({
+            success: true,
+            mes: "Đăng kí thành công",
         })
 
-        if (newUser) {
-            res.clearCookie('dataRegister');
-            return res.redirect(`${process.env.CLIENT_URL}/finalRegister/1`)
-        } else {
-            return res.redirect(`${process.env.CLIENT_URL}/finalRegister/0`)
-        }
-        // return res.status(200).json({
-        //     sucess: newUser ? true : false,
-        //     mes: newUser ? 'Đăng kí thành công. Vui lòng đăng nhập' : 'Đã có lỗi xảy ra'
+
+
+        // const newUser = await User.create({
+        //     name: data.name,
+        //     email: data.email,
+        //     password: data.password,
+        //     mobile: data.mobile
         // })
+        // if (newUser) {
+        //     res.clearCookie('dataRegister');
+        //     return res.redirect(`${process.env.CLIENT_URL}/finalRegister/1`)
+        // } else {
+        //     res.clearCookie('dataRegister');
+        //     return res.redirect(`${process.env.CLIENT_URL}/finalRegister/0`)
+        // }
     })
 
     login = asyncHandler(async (req, res) => {
@@ -155,15 +233,15 @@ class UserController {
     })
 
     forgotPassword = asyncHandler(async (req, res) => {
-        const { email } = req.query
+        const { email } = req.body
         console.log(email)
         if (!email) throw new Error('Thiếu email')
         const user = await User.findOne({ email })
-        if (!user) throw new Error('Không tìm thấy người dùng')
+        if (!user) throw new Error('Không tìm thấy email người dùng')
         const resetToken = user.createPasswordChangedToken()
         await user.save()
 
-        const html = `Xin vui lòng click vào link dưới đây để thay đổi mật khẩu của bạn.Link này sẽ hết hạn sau 15 phút kể từ bây giờ. <a href=${process.env.SERVER_URL}/api/user/reset-password/${resetToken}>Click here</a>`
+        const html = `Xin vui lòng click vào link dưới đây để thay đổi mật khẩu của bạn.Link này sẽ hết hạn sau 15 phút kể từ bây giờ. <a href=${process.env.CLIENT_URL}/reset-password/${resetToken}>Click here</a>`
 
         const data = {
             email,
@@ -181,7 +259,7 @@ class UserController {
         if (!password || !token) throw new Error('Thiếu đầu vào')
         const passwordResetToken = crypto.createHash('sha256').update(token).digest('hex')
         const user = await User.findOne({ passwordResetToken, passwordResetExpires: { $gt: Date.now() } })
-        if (!user) throw new Error('Reset Token không hợp lệ')
+        if (!user) throw new Error('Phiên quên mật này đã hết hạn, Vui lòng gửi email.')
         user.password = password
         user.passwordResetToken = undefined
         user.passwordChangedAt = Date.now()

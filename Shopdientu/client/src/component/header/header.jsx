@@ -49,11 +49,9 @@ const Header = () => {
                 </div>
 
             </div>
-
-
             <nav
                 className="navbar navbar-expand-lg fixed-top navbar-light"
-                style={{ backgroundColor: "#ffd400", top: showBanner ? "47px" : "0", zIndex: 1030, }}
+                style={{ backgroundColor: "#ffd400", top: showBanner ? "47px" : "0", zIndex: 900, }}
             >
                 <div className="container-fluid" style={{ padding: "0 30px" }}>
                     {/* Logo */}

@@ -7,7 +7,7 @@ const { verifyAccessToken, isAdmin } = require("../middlewares/verifyToken");
 router.get("/getAllUsers", verifyAccessToken, isAdmin, UserController.getAllUsers);
 router.post("/logIn", UserController.login);
 router.post("/register", UserController.register);
-router.post("/finalRegister/:token", UserController.finalRegister);
+router.put("/finalRegister/:token", UserController.finalRegister);
 router.get("/getSingleUser", verifyAccessToken, UserController.getCurrent);
 router.post("/refreshAccessToken", UserController.refreshAccessToken);
 router.delete("/deleteUser", UserController.deleteUser);

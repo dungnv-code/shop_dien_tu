@@ -11,5 +11,6 @@ export const path = {
     DETAIL_PRODUCT_PID_TITLE: "san-pham/:pid/:title",
     DETAIL_PRODUCT: "san-pham",
     FINAl_REGISTER: "finalRegister/:status",
+    RESET_PASSWORD: "reset-password/:token",
 }
 
