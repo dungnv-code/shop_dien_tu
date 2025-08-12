@@ -182,7 +182,7 @@ class UserController {
             // Lưu refresh token vào cookie
             res.cookie('refreshToken', newRefreshToken, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 })
             return res.status(200).json({
-                sucess: true,
+                success: true,
                 accessToken,
                 userData
             })
@@ -203,8 +203,7 @@ class UserController {
 
     refreshAccessToken = asyncHandler(async (req, res) => {
         // Lấy token từ cookies
-        const cookie = req.cookies
-        console.log(cookie);
+        const cookie = req.cookies;
         // Check xem có token hay không
         if (!cookie && !cookie.refreshToken) throw new Error('Không tìm thấy refresh token trong cookies')
         // Check token có hợp lệ hay không
@@ -217,11 +216,9 @@ class UserController {
     })
 
     logout = asyncHandler(async (req, res) => {
-        const cookie = req.cookies
+        const cookie = req.cookies;
         if (!cookie || !cookie.refreshToken) throw new Error('Không tìm thấy refresh token trong cookies')
-        // Xóa refresh token ở db
         await User.findOneAndUpdate({ refreshToken: cookie.refreshToken }, { refreshToken: '' }, { new: true })
-        // Xóa refresh token ở cookie trình duyệt
         res.clearCookie('refreshToken', {
             httpOnly: true,
             secure: true

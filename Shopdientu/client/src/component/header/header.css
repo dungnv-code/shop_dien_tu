@@ -6,3 +6,24 @@
 .hover_item:hover {
     background-color: #fe9;
 }
+
+.navbar-nav {
+    display: flex;
+    flex-wrap: nowrap;
+    /* Không xuống dòng */
+    align-items: center;
+    gap: 15px;
+    /* Khoảng cách giữa các li */
+}
+
+.navbar-nav .nav-item {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    /* Không cho text xuống dòng */
+}
+
+.navbar-nav .dropdown-menu {
+    min-width: max-content;
+    /* Đảm bảo dropdown không bị co */
+}

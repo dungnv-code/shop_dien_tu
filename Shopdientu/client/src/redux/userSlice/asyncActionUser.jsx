@@ -1,15 +1,15 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { LoginUser } from "../../api/User";
+import { getCurrentUser } from "../../api/User";
 
-export const getCategoris = createAsyncThunk(
-    "app/categoris",
+export const getCurrent = createAsyncThunk(
+    "app/getCurrent",
     async (data, { rejectWithValue }) => {
         try {
-            const response = await LoginUser();
-            if (response?.mes !== "Success") {
-                return rejectWithValue(response.data);
+            const response = await getCurrentUser();
+            if (response?.success == "fasle") {
+                return rejectWithValue(response.rs);
             }
-            return response;
+            return response.rs;
         } catch (error) {
             return rejectWithValue(error.response?.data || error.message);
         }

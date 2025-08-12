@@ -1,17 +1,25 @@
 import "./header.css"
 import { FaSearch, FaRegUser, FaShoppingCart, FaBlog, FaQuestionCircle } from "react-icons/fa";
+import { BsFillInfoCircleFill } from "react-icons/bs";
+import { IoIosLogOut } from "react-icons/io";
 import { useTranslation } from "react-i18next";
-
 import { BiSolidContact } from "react-icons/bi";
 import { path } from "../../ultils/path";
 import { Link } from "react-router-dom";
 import Navbar from "../navbar/Navbar"
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-
+import { useSelector, useDispatch } from "react-redux";
+import { getCurrent } from "../../redux/userSlice/asyncActionUser";
+import { LogOut } from "../../redux/userSlice/userSlice";
+import { LogoutUser } from "../../api/User";
 const Header = () => {
     const { isLogIn, current } = useSelector(state => state.user);
     const [showBanner, setShowBanner] = useState(true);
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        isLogIn && dispatch(getCurrent());
+    }, [isLogIn, dispatch]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -32,7 +40,11 @@ const Header = () => {
         localStorage.setItem("lang", lng);
     };
 
-
+    const hanleLogOut = async (e) => {
+        e.preventDefault();
+        const data = await dispatch(LogOut());
+        await LogoutUser();
+    }
 
     return <>
         <div>
@@ -89,30 +101,11 @@ const Header = () => {
 
                     {/* Các nút bên phải */}
                     <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul className="navbar-nav ms-auto mb-2 gap-3 mb-lg-0">
-                            <li className="nav-item text-nowrap  hover_item">
-                                {
-                                    isLogIn ? <>
-                                        <Link className="nav-link" to={path.LOGIN}>
-                                            <FaRegUser /> {current.name}
-                                        </Link>
-                                    </> :
-                                        (<>
-                                            <Link className="nav-link" to={path.LOGIN}>
-                                                <FaRegUser /> Đăng nhập
-                                            </Link>
-                                        </>)
-                                }
-                            </li>
-                            <li className="nav-item text-nowrap hover_item">
-                                <Link className="nav-link" to="#">
-                                    <FaShoppingCart /> Giỏ hàng
-                                </Link>
-                            </li>
-                            <li className="nav-item text-nowrap">
+                        <ul className="navbar-nav ms-auto mb-2 mb-lg-0 d-flex flex-row align-items-center gap-3">
+                            <li className="nav-item dropdown  text-nowrap">
                                 <div className="dropdown" >
                                     <div className="btn  dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                        Thông tin
+                                        <BsFillInfoCircleFill />   Thông tin
                                     </div>
                                     <ul className="dropdown-menu m-2" aria-labelledby="dropdownMenuButton1">
                                         <li>
@@ -154,6 +147,40 @@ const Header = () => {
                                         </button>
                                     </li>
                                 </ul>
+                            </li>
+                            <li className="nav-item text-nowrap hover_item">
+                                <Link className="nav-link" to="#">
+                                    <FaShoppingCart /> Giỏ hàng
+                                </Link>
+                            </li>
+                            <li className="nav-item text-nowrap  hover_item">
+                                {
+                                    isLogIn ? (<>
+                                        <div className="nav-item dropdown">
+
+                                            <Link className="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                                                <FaRegUser /> {current?.name}
+                                            </Link>
+
+                                            <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                                                <li>
+                                                    <Link className="dropdown-item" to={path.PROFILE} >
+                                                        Profile
+                                                    </Link>
+                                                </li>
+                                                <li>
+                                                    <button className="dropdown-item" onClick={(e) => { hanleLogOut(e) }} >
+                                                        <IoIosLogOut />   Đăng xuất
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>                          </>) :
+                                        (<>
+                                            <Link className="nav-link" to={path.LOGIN}>
+                                                <FaRegUser /> Đăng nhập
+                                            </Link>
+                                        </>)
+                                }
                             </li>
                         </ul>
                     </div>

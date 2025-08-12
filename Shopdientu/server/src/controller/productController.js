@@ -178,11 +178,13 @@ class ProductControlller {
 
     addVariantItem = asyncHandler(async (req, res) => {
         try {
-            const { pid, size, color, price, image } = req.body;
+            const { pid, size, color, price } = req.body;
 
             if (!pid || !size || !color || price == null) {
                 return res.status(400).json({ message: "Thiếu dữ liệu bắt buộc." });
             }
+
+            if (!req.file) throw new Error("Thiếu đầu vào");
 
             const product = await Product.findById(pid);
             if (!product) return res.status(404).json({ message: "Không tìm thấy sản phẩm." });
@@ -199,14 +201,14 @@ class ProductControlller {
                 // Thêm vào mảng
                 variant.color.push(color);
                 variant.price.push(price);
-                variant.image.push(image || "");
+                variant.image.push(req.file.path || "");
             } else {
                 // Chưa có size đó → tạo mới
                 product.variants.push({
                     size,
                     color: [color],
                     price: [price],
-                    image: [image || ""]
+                    image: [req.file.path || ""]
                 });
             }
 

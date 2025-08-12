@@ -7,3 +7,6 @@ export { default as CountDown } from "./countDown/CountDown"
 export { default as Input } from "./input/Input"
 export { default as Button } from "./button/Button"
 export { default as Loading } from "./loading/Loading";
+export { default as Breadcrumbs } from "./breadcrumbs/Breadcrumbs"
+export { default as ProductSimilar } from "./productSimilar/ProductSimilar";
+export { default as Quantity } from "./quantity/Quantity";

@@ -6,6 +6,18 @@ const instance = axios.create({ baseURL: import.meta.env.VITE_API_SERVER });
 
 instance.interceptors.request.use((config) => {
 
+    let localStoData = window.localStorage.getItem("persist:shop/user");
+    if (typeof localStoData === 'string') {
+        try {
+            const parsedData = JSON.parse(localStoData); // parse object persist
+            const accessToken = parsedData.token ? JSON.parse(parsedData.token) : null; // parse token string
+            if (accessToken) {
+                config.headers.Authorization = `Bearer ${accessToken}`;
+            }
+        } catch (e) {
+            console.error("Lỗi parse token từ localStorage:", e);
+        }
+    }
     // loadingController.setLoading(true);
     // loadingController.setLoadingText(config.loadingText || "Đang xử lý...");
     return config;

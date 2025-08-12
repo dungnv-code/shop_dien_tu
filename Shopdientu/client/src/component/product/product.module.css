@@ -1,4 +1,5 @@
 .border_shadow {
+    height: 100%;
     box-shadow: rgb(60 64 67 / 10%) 0px 1px 2px 0px, rgb(60 64 67 / 15%) 0px 2px 6px 2px;
     border-radius: 10px;
     transition: all 1s ease-in;
@@ -25,7 +26,6 @@
 
 .hover_icon {
     position: absolute;
-    /* cần thiết để bottom hoạt động */
     bottom: 0;
     opacity: 0;
     visibility: hidden;

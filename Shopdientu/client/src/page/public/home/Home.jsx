@@ -75,7 +75,7 @@ const Home = () => {
                 const now = new Date();
                 const target = new Date();
                 target.setDate(now.getDate() + 1); // ngày hôm sau
-                target.setHours(5, 0, 0, 0); // 5:00:00 sáng
+                target.setHours(0, 0, 0, 0); // 5:00:00 sáng
 
                 const diffInSeconds = Math.floor((target - now) / 1000);
 
@@ -210,7 +210,7 @@ const Home = () => {
                         }
                     </div>
 
-                    <div className="row gx-3">
+                    <div className="row gx-3 d-flex ">
                         {
                             products?.map((item, index) => (
                                 <div
@@ -222,7 +222,6 @@ const Home = () => {
                             ))
                         }
                     </div>
-
                 </div>
 
             </div>

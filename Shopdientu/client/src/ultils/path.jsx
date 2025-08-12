@@ -8,9 +8,10 @@ export const path = {
     OUT_SERVICER: "servicer",
     FAQ: "faqs",
     CONTACT: "lien-he",
-    DETAIL_PRODUCT_PID_TITLE: "san-pham/:pid/:title",
+    DETAIL_PRODUCT_CATEGORI_PID_TITLE: ":cid/:pid/:title",
     DETAIL_PRODUCT: "san-pham",
     FINAl_REGISTER: "finalRegister/:status",
     RESET_PASSWORD: "reset-password/:token",
+    PROFILE: "profile",
 }
 

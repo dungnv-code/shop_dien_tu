@@ -1,0 +1,32 @@
+.slick-slide {
+    padding: 8px;
+    /* khoảng cách giữa các item */
+}
+
+.slick-list {
+    margin: 0 -8px;
+    /* bù padding để không bị lệch */
+}
+
+.slick-slide>div {
+    height: 100%;
+    display: flex;
+}
+
+
+
+.product-card {
+    height: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.row-custom {
+    height: 100%;
+
+}

@@ -20,12 +20,15 @@
     background-color: #FFF6E3 !important;
 }
 
-.custom-col {
-    width: 20%;
-    /* 100% / 5 */
-    padding-left: 0.75rem;
-    /* tương đương gx-3 */
-    padding-right: 0.75rem;
-    margin-bottom: 1rem;
-    /* nếu muốn có khoảng cách dưới */
+.row-custom {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    /* 5 cột bằng nhau */
+    gap: 12px;
+    /* khoảng cách giữa các item */
+}
+
+.product-item {
+    background: #fff;
+    /* ví dụ */
 }

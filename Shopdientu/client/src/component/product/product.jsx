@@ -5,10 +5,11 @@ import { memo } from "react";
 import clsx from "clsx"
 import { Link } from "react-router-dom";
 import { path } from "../../ultils/path";
+import { toSlug } from "../../ultils/helper";
 const Product = ({ dataProduct }) => {
     const price = dataProduct.price.toLocaleString();
     return <>
-        <Link to={`/${path.DETAIL_PRODUCT}/${dataProduct._id}/${dataProduct.slug}`}>
+        <Link to={`/${toSlug(dataProduct.category)}/${dataProduct._id}/${dataProduct.slug}`}>
             <div style={{ width: "100%", position: "relative", fontSize: "14px" }} className={clsx(styles.border_shadow, "h-100", "p-3")}>
                 <div className="p-1" style={{ position: "relative" }}>
                     {
@@ -32,7 +33,6 @@ const Product = ({ dataProduct }) => {
                         <IoMdStar style={{ color: "#FCC200", fontSize: "20px" }} />
                     </div>
                     <div>{dataProduct.totalRating}</div>
-
                     <div>
                         - Đã bán 2000k
                     </div>

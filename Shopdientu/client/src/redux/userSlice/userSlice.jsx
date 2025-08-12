@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-// import * as action from "./asyncActionUser";
+import * as action from "./asyncActionUser";
 
 export const UsertSlice = createSlice({
     name: 'user',
@@ -10,24 +10,30 @@ export const UsertSlice = createSlice({
     },
 
     reducers: {
-        resgister: (state, action) => {
+        LogIn: (state, action) => {
             state.isLogIn = action.payload.isLogIn;
-            state.current = action.payload.current;
             state.token = action.payload.token;
+        },
+        LogOut: (state, action) => {
+            state.isLogIn = false;
+            state.token = null;
         }
     },
-    // extraReducers: (builder) => {
-    //     builder.addCase(action.getCategoris.fulfilled, (state, action) => {
-    //         state.isLoading = false;
-    //         state.categoris = action.payload.data;
-    //     })
-    //     builder.addCase(action.getCategoris.rejected, (state, action) => {
-    //         state.isLoading = false;
-    //         state.errorMessage = action.payload.message;
-    //     })
-    // }
+    extraReducers: (builder) => {
+        builder.addCase(action.getCurrent.pending, (state, action) => {
+            state.isLoading = true;
+        })
+        builder.addCase(action.getCurrent.fulfilled, (state, action) => {
+            state.isLoading = false;
+            state.current = action.payload;
+        })
+        builder.addCase(action.getCurrent.rejected, (state, action) => {
+            state.isLoading = false;
+            state.current = null;
+        })
+    }
 })
 
-export const { resgister } = UsertSlice.actions;
+export const { LogIn, LogOut } = UsertSlice.actions;
 
 export default UsertSlice.reducer;

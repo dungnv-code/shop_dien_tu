@@ -6,12 +6,12 @@ import Swal from "sweetalert2"
 import { useNavigate } from "react-router-dom";
 import { path } from "../../../ultils/path";
 import { useDispatch } from "react-redux";
-import { resgister } from "../../../redux/userSlice/userSlice";
-import { toast } from "react-toastify";
+import { LogIn } from "../../../redux/userSlice/userSlice";
+// import { toast } from "react-toastify";
 import { Loading } from "../../../component";
 const Login = () => {
     const navigate = useNavigate();
-    const dispath = useDispatch();
+    const dispatch = useDispatch();
     const [isload, setLoad] = useState(false);
     const [payload, setPayload] = useState({
         name: "",
@@ -43,29 +43,44 @@ const Login = () => {
         e.preventDefault();
         const { name, phone, ...data } = payload;
         if (isRegister) {
-            const response = await RegisterUser(payload);
-            if (response.success) {
-                setComfirmRegister(true)
+            setLoad(true)
+            try {
+                const response = await RegisterUser(payload);
+                if (response.success) {
+                    setComfirmRegister(true);
+                }
+            } finally {
+                setLoad(false)
             }
         } else {
             setLoad(true);
-            const response = await LoginUser(data);
-            setLoad(false);
-            if (response.sucess) {
-                dispath(resgister({
-                    isLogIn: true, current: response.userData, token: response.accessToken
-                }));
-
-                Swal.fire({
-                    icon: "success",
-                    title: "Đăng nhập thành công!",
-                    text: data.mes || "Chào mừng bạn đến với trang web.",
-                    confirmButtonText: "Về trang chủ"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        navigate(`/${path.HOME}`);
-                    }
-                });
+            try {
+                const response = await LoginUser(data);
+                if (response.success) {
+                    dispatch(LogIn({
+                        isLogIn: true,
+                        current: response.userData,
+                        token: response.accessToken
+                    }));
+                    Swal.fire({
+                        icon: "success",
+                        title: "Đăng nhập thành công!",
+                        text: data.mes || "Chào mừng bạn đến với trang web.",
+                        confirmButtonText: "Về trang chủ"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            navigate(`/${path.HOME}`);
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Đăng nhập thất bại",
+                        text: response.mes || "Vui lòng kiểm tra lại thông tin."
+                    });
+                }
+            } finally {
+                setLoad(false);
             }
         }
     })
@@ -74,17 +89,20 @@ const Login = () => {
         e.preventDefault();
         setLoad(true);
         const data = await ForgotPasswordUser({ "email": emailForgot });
-        if (data.success) {
+        try {
+            if (data.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Vui lòng check email của bạn!",
+                    confirmButtonText: "Xác nhận"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setEmailForgot("");
+                    }
+                });
+            }
+        } finally {
             setLoad(false);
-            Swal.fire({
-                icon: "success",
-                title: "Vui lòng check email của bạn!",
-                confirmButtonText: "Xác nhận"
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    setEmailForgot("");
-                }
-            });
         }
 
     })
@@ -100,9 +118,8 @@ const Login = () => {
                 confirmButtonText: "Đi đến đăng nhập"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    isComfirmRegister(false);
-                    setCodeComfirmRegister("");
-                    isRegister(false);
+                    setComfirmRegister(false);
+                    setRegister(false);
                 }
             });
         }
@@ -117,7 +134,7 @@ const Login = () => {
             />
 
             {
-                isload ? <Loading ></Loading> : (<></>)
+                isload && <Loading ></Loading>
             }
 
             {/* quên mật khẩu */}
