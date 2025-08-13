@@ -31,6 +31,19 @@ class ProductCategoryControlller {
 
     });
 
+    getProductCategoryTitle = asyncHandler(async (req, res) => {
+
+        const { title } = req.query;
+        if (!title) {
+            throw new Error("Thiếu đầu vào");
+        }
+
+        const reponse = await ProductCategory.find({ title });
+        return res.status(200).json({
+            success: "true",
+            reponse
+        })
+    })
 
     updateProductCategori = asyncHandler(async (req, res) => {
         const { cid } = req.params

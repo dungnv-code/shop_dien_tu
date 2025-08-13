@@ -3,7 +3,7 @@ import './App.css';
 import { path } from "./ultils/path";
 import {
   Public, Home, Login, Blog, DetailProduct, Servicer,
-  FAQ, Contact, FinalRegister, ResetPassword, Profile
+  FAQ, Contact, FinalRegister, ResetPassword, Profile, ProductCa
 } from "./page/public";
 import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -28,6 +28,7 @@ function AppContent() {
           <Route path={path.CONTACT} element={<Contact />} />
           <Route path={path.OUT_SERVICER} element={<Servicer />} />
           <Route path={path.PROFILE} element={<Profile />} />
+          <Route path={path.PRODUCTCA} element={<ProductCa />} />
         </Route>
         <Route path={path.RESET_PASSWORD} element={<ResetPassword />} />
         <Route path={path.FINAl_REGISTER} element={<FinalRegister />} />

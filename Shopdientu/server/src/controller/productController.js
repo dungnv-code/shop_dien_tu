@@ -15,7 +15,7 @@ class ProductControlller {
 
     getDetailProduct = asyncHandler(async (req, res) => {
         const { pid } = req.params
-        const product = await Product.findById(pid)
+        const product = await Product.findById(pid).populate("ratings.postedBy", "name");
         return res.status(200).json({
             success: product ? true : false,
             productData: product ? product : 'Cannot get product'
@@ -115,14 +115,15 @@ class ProductControlller {
 
     ratings = asyncHandler(async (req, res) => {
         const { _id } = req.user;
-        const { pid, star } = req.body;
+        const { pid, star, comment } = req.body;
         const product = await Product.findById(pid);
         const isratings = product.ratings.find((rating) => { return rating.postedBy.toString() == _id.toString() })
         if (isratings) {
+            isratings.comment = comment;
             isratings.star = star;
             await product.save();
         } else {
-            product.ratings.push({ star, postedBy: _id });
+            product.ratings.push({ star, postedBy: _id, comment });
             await product.save();
         }
         const totalRatings = product.ratings.length;
@@ -137,15 +138,6 @@ class ProductControlller {
         })
     })
 
-    commentProduct = asyncHandler(async (req, res) => {
-        const { _id } = req.user;
-        const { pid, comment } = req.body;
-        const commentNew = await Product.findByIdAndUpdate(pid, { $push: { comments: { comment, postedBy: _id } } }, { new: true });
-        res.status(200).json({
-            mes: "success",
-            data: commentNew
-        })
-    })
 
     deleteComment = asyncHandler(async (req, res) => {
         const { pid, cid } = req.params;

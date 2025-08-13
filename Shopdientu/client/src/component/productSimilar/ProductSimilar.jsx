@@ -16,7 +16,7 @@ const ProductSimilar = ({ category }) => {
 
     useEffect(() => {
         const FetchProduct = async () => {
-            console.log(category)
+
             const seed = Number(new Date().toISOString().split("T")[0].replace(/-/g, ''));
             const response = await getProducts({
                 params: { category, random: true, seed, limit: 7 }

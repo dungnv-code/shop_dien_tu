@@ -10,3 +10,5 @@ export { default as Loading } from "./loading/Loading";
 export { default as Breadcrumbs } from "./breadcrumbs/Breadcrumbs"
 export { default as ProductSimilar } from "./productSimilar/ProductSimilar";
 export { default as Quantity } from "./quantity/Quantity";
+export { default as DescriptionProduct } from "./discriptionProduct/DiscriptionProduct";
+export { default as FilterPro } from "./FilterPro/FilterPro";

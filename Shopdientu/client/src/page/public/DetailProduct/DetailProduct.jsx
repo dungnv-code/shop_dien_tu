@@ -4,7 +4,7 @@ import { getDetailProduct } from "../../../api/Product";
 import { useEffect, useState, useRef } from "react";
 import { Breadcrumbs } from "../../../component";
 import Slider from "react-slick";
-import { ProductSimilar, Quantity } from "../../../component/index"
+import { ProductSimilar, Quantity, DescriptionProduct } from "../../../component/index"
 
 const DetailProduct = () => {
     const { pid, title } = useParams();
@@ -161,9 +161,9 @@ const DetailProduct = () => {
                 </ul>
             </div>
         </div>
-        <div className="row">
-            <div className="col-9">
-                {product?.description}
+        <div className="row" style={{ margin: "30px 0" }}>
+            <div className="col-9 ">
+                {product && <DescriptionProduct description={product?.description} totalrating={product?.totalRating} rating={product?.ratings} />}
             </div>
             <div className="col-3">
                 Blog

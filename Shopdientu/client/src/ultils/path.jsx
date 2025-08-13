@@ -13,5 +13,6 @@ export const path = {
     FINAl_REGISTER: "finalRegister/:status",
     RESET_PASSWORD: "reset-password/:token",
     PROFILE: "profile",
+    PRODUCTCA: "/:category"
 }
 
