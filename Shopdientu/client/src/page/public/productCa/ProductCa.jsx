@@ -1,9 +1,10 @@
 import "./ProductCa.css"
-import { useParams } from "react-router-dom";
-import { Breadcrumbs, Product, FilterPro } from "../../../component";
+import { useParams, useSearchParams, createSearchParams, useNavigate } from "react-router-dom";
+import { Breadcrumbs, Product, FilterPro, InputSelect, PaginationCustom } from "../../../component";
 import { getProducts } from "../../../api/Product";
 import { useEffect, useState, useCallback } from "react";
 import { getProductCategoryTitle } from "../../../api/Categori";
+
 import Masonry from 'react-masonry-css'
 const breakpointColumnsObj = {
     default: 5,
@@ -13,31 +14,56 @@ const breakpointColumnsObj = {
 };
 
 const ProductCa = () => {
+
     const { category } = useParams();
     const [products, setProducts] = useState([]);
     const [actives, setActives] = useState(null);
     const [brand, setBrand] = useState([]);
+    const [searchParams] = useSearchParams();
+    const [sortSelect, setSelectSort] = useState("");
+    const navigate = useNavigate();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const limit = 4;
+
     useEffect(() => {
-        const fetchProducts = async () => {
+        const fetchProducts = async (query = {}) => {
             const response = await getProducts({
-                params: { category, limit: 100 }
+                params: { category, ...query, limit: limit, page: currentPage }
             });
-
             const brand = await getProductCategoryTitle({ "title": category });
-
             if (Array.isArray(brand.reponse) && brand.reponse.length > 0) {
                 const brands = brand.reponse[0].brand;
                 setBrand(brands);
             }
-
             setProducts(response?.productDatas);
+            setTotalPages(response?.totalPages);
         }
-        fetchProducts();
-    }, [category])
 
-    useEffect(() => {
+        const brands = searchParams.getAll("brand");
+        const from = searchParams.getAll("from")[0];
+        const to = searchParams.getAll("to")[0];
+        const sort = searchParams.get("sort");
+        const query = {
+            ...(brands.length && { brand: brands.join(",") }),
+            ...(from > 0 && { "price[gt]": from }),
+            ...(to > 0 && { "price[lt]": to }),
+            ...(sort && { sort })
+        };
+        fetchProducts(query);
+    }, [category, searchParams, currentPage])
 
-    }, [products])
+    const sortBy = [
+        { label: "Mới nhất", value: "-createdAt" },
+        { label: "Cũ nhất", value: "createdAt" },
+        { label: "Giá cao", value: "-price" },
+        { label: "Giá thấp", value: "price" },
+        { label: "Đánh giá cao", value: "-totalRating" },
+        { label: "Đánh giá thấp", value: "totalRating" },
+        { label: "Tên A-Z", value: "title" },
+        { label: "Tên Z-A", value: "-title" },
+        { label: "Đã bán nhiều", value: "-sold" },
+    ]
 
     const changeActive = useCallback((name) => {
         if (actives === name) {
@@ -46,6 +72,19 @@ const ProductCa = () => {
             setActives(name);
         }
     }, [actives])
+
+    const handleSortChange = (e) => {
+        setSelectSort(e.target.value);
+    }
+
+    useEffect(() => {
+        navigate({
+            pathname: `/${category}`,
+            search: createSearchParams({
+                sort: sortSelect
+            }).toString()
+        })
+    }, [sortSelect])
 
     return <>
         <div style={{ padding: "20px 30px" }}>
@@ -63,6 +102,7 @@ const ProductCa = () => {
                 </div>
                 <div className="col-2 m-2">
                     <div className="m-2"><b>Sắp xếp theo</b></div>
+                    <InputSelect value={sortSelect} options={sortBy} onChange={handleSortChange} />
                 </div>
             </div>
             <div style={{ padding: "20px 10px" }}>
@@ -78,6 +118,16 @@ const ProductCa = () => {
                     })}
                 </Masonry>
             </div>
+            {
+                totalPages > 0 && (
+                    <PaginationCustom
+                        currentPage={currentPage}
+                        setCurrentPage={setCurrentPage}
+                        limit={limit}
+                        totalPages={totalPages}
+                    />
+                )
+            }
         </div>
     </>
 }

@@ -23,7 +23,7 @@ const DetailProduct = () => {
             }
         }
         FetchProductDetail();
-    }, [])
+    }, [product?.ratings])
 
     const goToSlide = (index) => {
         sliderRef.current.slickGoTo(index);
@@ -40,11 +40,8 @@ const DetailProduct = () => {
         console.log("quantify", quantity)
     }
 
-
     const images = product?.variants?.[indexVariant]?.image || [];
     const variantsst = product?.variants;
-
-
 
     var settings = {
         customPaging: function (i) {
@@ -134,7 +131,6 @@ const DetailProduct = () => {
                 {
                     product?.variants?.length !== 0 && (<><p><b>Dung lượng ổ cứng:</b> {variantsst?.[indexVariant]?.size} gb</p></>)
                 }
-
                 <div className="d-flex gap-2 flex-wrap">
                     {product?.variants.map((variant, index) => (
                         <div key={variant._id || index} onClick={() => { hanleGb(index) }} className="border px-3 py-1 rounded">
@@ -163,14 +159,13 @@ const DetailProduct = () => {
         </div>
         <div className="row" style={{ margin: "30px 0" }}>
             <div className="col-9 ">
-                {product && <DescriptionProduct description={product?.description} totalrating={product?.totalRating} rating={product?.ratings} />}
+                {product && <DescriptionProduct name={product?.title} pid={product._id} description={product?.description} totalrating={product?.totalRating} rating={product?.ratings} />}
             </div>
             <div className="col-3">
                 Blog
             </div>
         </div>
         {product?.category && <ProductSimilar category={product.category} />}
-
     </ div >
 }
 

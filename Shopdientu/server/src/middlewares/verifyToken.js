@@ -16,7 +16,7 @@ const verifyAccessToken = asyncHandler(async (req, res, next) => {
     } else {
         return res.status(401).json({
             success: false,
-            mes: 'Require authentication!!!'
+            mes: 'Yêu cầu đăng nhập!!!'
         })
     }
 })

@@ -6,7 +6,9 @@ const Public = () => {
         <div>
             <Header />
         </div>
-        <Outlet />
+        <div className="container" style={{ minHeight: "calc(100vh - 100px)", paddingTop: "110px" }}>
+            <Outlet />
+        </div>
         <div>
             <Footer />
         </div>

@@ -63,15 +63,14 @@ const Header = () => {
             </div>
             <nav
                 className="navbar navbar-expand-lg fixed-top navbar-light"
-                style={{ backgroundColor: "#ffd400", top: showBanner ? "47px" : "0", zIndex: 900, }}
+                style={{ backgroundColor: "#ffd400", display: "flex", flexDirection: "column", top: showBanner ? "47px" : "0", zIndex: 900, }}
             >
                 <div className="container-fluid" style={{ padding: "0 30px" }}>
-                    {/* Logo */}
+
                     <Link className="navbar-brand fw-bold" to={`/${path.HOME}`}>
                         DungNV
                     </Link>
 
-                    {/* Nút toggle (mobile) */}
                     <button
                         className="navbar-toggler"
                         type="button"
@@ -185,12 +184,10 @@ const Header = () => {
                         </ul>
                     </div>
                 </div>
+                <div >
+                    <Navbar />
+                </div>
             </nav >
-
-
-            <div style={{ marginTop: showBanner ? "55px" : "9px" }}>
-                <Navbar />
-            </div>
         </div >
     </>
 }

@@ -118,7 +118,7 @@ const Home = () => {
 
     return <>
         <div className={clsx(styles.content_home)}>
-            <div style={{ paddingTop: "20px", position: "relative" }}>
+            <div style={{ paddingTop: "40px", position: "relative" }}>
                 {
                     hideimg ? (<>   <img src="https://cdnv2.tgdd.vn/mwg-static/tgdd/Banner/d8/4b/d84ba4cb006ff06acfe636fdc7ed6828.png" alt="img-header" style={{ objectFit: "cover" }} width={"100%"} height={"240px"}></img>
                         <div className={clsx(styles.position_img_header)}><FaRegTimesCircle className="fs-4" onClick={() => { setHideimg(false) }} /></div></>) : (<></>)

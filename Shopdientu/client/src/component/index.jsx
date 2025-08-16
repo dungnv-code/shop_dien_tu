@@ -12,3 +12,5 @@ export { default as ProductSimilar } from "./productSimilar/ProductSimilar";
 export { default as Quantity } from "./quantity/Quantity";
 export { default as DescriptionProduct } from "./discriptionProduct/DiscriptionProduct";
 export { default as FilterPro } from "./FilterPro/FilterPro";
+export { default as InputSelect } from "./inputSelect/InputSelect";
+export { default as PaginationCustom } from "./pagination/Pagination";

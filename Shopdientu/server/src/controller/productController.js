@@ -26,7 +26,6 @@ class ProductControlller {
         const queries = { ...req.query };
         const excludeFields = ["limit", "sort", "page", "fields", "random", "seed"];
         excludeFields.forEach(el => delete queries[el]);
-
         const filter = {};
         for (const key in queries) {
             const match = key.match(/^(\w+)\[(gte|gt|lte|lt)\]$/);
@@ -37,9 +36,15 @@ class ProductControlller {
             } else if (key === "title") {
                 filter.title = { $regex: queries[key], $options: "i" };
             } else {
-                filter[key] = queries[key];
+                // Nếu giá trị có dấu phẩy → lọc theo nhiều giá trị
+                if (typeof queries[key] === "string" && queries[key].includes(",")) {
+                    filter[key] = { $in: queries[key].split(",") };
+                } else {
+                    filter[key] = queries[key];
+                }
             }
         }
+
 
         try {
             const seedrandom = require("seedrandom");
@@ -121,9 +126,10 @@ class ProductControlller {
         if (isratings) {
             isratings.comment = comment;
             isratings.star = star;
+            isratings.updateAt = Date.now();
             await product.save();
         } else {
-            product.ratings.push({ star, postedBy: _id, comment });
+            product.ratings.push({ star, postedBy: _id, comment, updateAt: Date.now() });
             await product.save();
         }
         const totalRatings = product.ratings.length;

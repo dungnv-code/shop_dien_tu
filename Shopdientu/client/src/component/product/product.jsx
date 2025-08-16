@@ -6,6 +6,7 @@ import clsx from "clsx"
 import { Link } from "react-router-dom";
 import { path } from "../../ultils/path";
 import { toSlug } from "../../ultils/helper";
+
 const Product = ({ dataProduct }) => {
     const price = dataProduct.price.toLocaleString();
     return <>
@@ -34,7 +35,7 @@ const Product = ({ dataProduct }) => {
                     </div>
                     <div>{dataProduct.totalRating}</div>
                     <div>
-                        - Đã bán 2000k
+                        - Đã bán {dataProduct.sold}
                     </div>
                 </div>
                 <div style={{ position: "absolute", fontWeight: "bold", color: "white", backgroundColor: "red", borderRadius: "50%", padding: "8px 3px", top: "8px" }}>
