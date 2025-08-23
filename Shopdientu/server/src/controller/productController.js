@@ -4,9 +4,50 @@ const slugify = require('slugify')
 
 class ProductControlller {
     createProduct = asyncHandler(async (req, res) => {
-        if (Object.keys(req.body).length === 0) throw new Error('Missing inputs')
-        if (req.body && req.body.title) req.body.slug = slugify(req.body.title)
-        const newProduct = await Product.create(req.body)
+
+        // Validate required fields for creating a product
+        const requiredFields = ["title", "price", "category"];
+        for (const field of requiredFields) {
+            if (!req.body[field]) {
+                return res
+                    .status(400)
+                    .json({ success: false, message: `Missing required field: ${field}` });
+            }
+        }
+
+        // Validate price phải là số dương
+        if (isNaN(req.body.price) || req.body.price <= 0) {
+            return res
+                .status(400)
+                .json({ success: false, message: "Price phải là số > 0" });
+        }
+
+        // Validate slug: lowercase & không có dấu cách
+        if (req.body.slug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(req.body.slug)) {
+            return res
+                .status(400)
+                .json({ success: false, message: "Slug không hợp lệ" });
+        }
+
+
+        if (
+            req.body.image &&
+            !/^https?:\/\/.+\.(jpg|jpeg|png|webp|gif)$/i.test(req.body.image)
+        ) {
+            return res
+                .status(400)
+                .json({ success: false, message: "Image URL không hợp lệ" });
+        }
+
+        if (Object.keys(req.body).length === 0) {
+
+            throw new Error('Missing inputs')
+        }
+        if (req.body && req.body.title) req.body.slug = slugify(req.body.title);
+
+        if (!req.file) throw new Error("Thiếu đầu vào ảnh");
+        console.log(req.body);
+        const newProduct = await Product.create({ ...req.body, image: req.file.path });
         return res.status(200).json({
             success: newProduct ? true : false,
             createdProduct: newProduct ? newProduct : 'Cannot create new product'
@@ -44,8 +85,6 @@ class ProductControlller {
                 }
             }
         }
-
-
         try {
             const seedrandom = require("seedrandom");
             const isRandom = req.query.random === "true";
@@ -79,7 +118,6 @@ class ProductControlller {
                     .sort(sort)
                     .skip(skip)
                     .limit(limit);
-
                 const [products, total] = await Promise.all([
                     productQuery.lean(),
                     Product.countDocuments(filter)
@@ -98,25 +136,63 @@ class ProductControlller {
         }
     });
 
-
     updateProduct = asyncHandler(async (req, res) => {
-        const { pid } = req.params
-        if (req.body && req.body.title) req.body.slug = slugify(req.body.title)
-        const updatedProduct = await Product.findByIdAndUpdate(pid, req.body, { new: true })
+        const { pid } = req.params;
+
+        // Nếu có title -> tạo slug
+        if (req.body && req.body.title) {
+            req.body.slug = slugify(req.body.title);
+        }
+
+        // Chuẩn bị dữ liệu update
+        const updateData = { ...req.body };
+
+        // Nếu có file upload thì mới thêm image
+        if (req.file) {
+            updateData.image = req.file.path; // hoặc req.file.filename nếu bạn lưu local
+        }
+
+        const updatedProduct = await Product.findByIdAndUpdate(
+            pid,
+            updateData,
+            { new: true }
+        );
+
         return res.status(200).json({
-            success: updatedProduct ? true : false,
-            updatedProduct: updatedProduct ? updatedProduct : 'Cannot update product'
-        })
-    })
+            success: !!updatedProduct,
+            updatedProduct: updatedProduct || "Cannot update product"
+        });
+    });
 
     deleteProduct = asyncHandler(async (req, res) => {
-        const { pid } = req.params
-        const deletedProduct = await Product.findByIdAndDelete(pid)
+        const { pid } = req.params;
+
+        // Tìm sản phẩm trước
+        const product = await Product.findById(pid);
+        if (!product) {
+            return res.status(404).json({
+                success: false,
+                mes: "Không tìm thấy sản phẩm"
+            });
+        }
+
+        // Nếu đã có lượt bán -> cấm xoá
+        if (product.sold > 0) {
+            return res.status(409).json({
+                success: false,
+                mes: "Sản phẩm đã có lượt bán, không thể xoá"
+            });
+        }
+
+        // Nếu chưa bán -> cho phép xoá
+        const deletedProduct = await Product.findByIdAndDelete(pid);
+
         return res.status(200).json({
-            success: deletedProduct ? true : false,
-            deletedProduct: deletedProduct ? deletedProduct : 'Cannot delete product'
-        })
-    })
+            success: !!deletedProduct,
+            deletedProduct: deletedProduct || "Không thể xoá sản phẩm"
+        });
+    });
+
 
     ratings = asyncHandler(async (req, res) => {
         const { _id } = req.user;
@@ -181,7 +257,6 @@ class ProductControlller {
             if (!pid || !size || !color || price == null) {
                 return res.status(400).json({ message: "Thiếu dữ liệu bắt buộc." });
             }
-
             if (!req.file) throw new Error("Thiếu đầu vào");
 
             const product = await Product.findById(pid);

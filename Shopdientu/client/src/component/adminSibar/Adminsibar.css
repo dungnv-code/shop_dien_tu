@@ -1,0 +1,39 @@
+/* Sidebar wrapper */
+.admin-sidebar {
+    background-color: #212529;
+    /* nền tối */
+    color: #fff;
+    padding: 1rem 0;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Brand */
+.admin-sidebar .navbar-brand {
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Navigation links */
+.admin-sidebar .nav-link {
+    color: #adb5bd;
+    padding: 12px 20px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease-in-out;
+    border-radius: 8px;
+    margin: 4px 8px;
+}
+
+/* Hover effect */
+.admin-sidebar .nav-link:hover {
+    background-color: #343a40;
+    color: #fff;
+}
+
+/* Active link */
+.admin-sidebar .nav-link.active {
+    background-color: #0d6efd;
+    color: #fff !important;
+    font-weight: 600;
+}

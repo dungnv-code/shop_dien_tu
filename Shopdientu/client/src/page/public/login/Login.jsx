@@ -69,7 +69,7 @@ const Login = () => {
                         confirmButtonText: "Về trang chủ"
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            navigate(`/${path.HOME}`);
+                            navigate(`${path.HOME}`);
                         }
                     });
                 } else {

@@ -5,7 +5,6 @@ import { getProducts } from "../../api/Product";
 const FilterProduct = ({ name, actives, changeActive, type = "checkbox", data = [] }) => {
 
     const [select, setSelect] = useState([]);
-
     const navigate = useNavigate();
     const [bestPrice, setBestPrice] = useState(0);
     const { category } = useParams();

@@ -10,6 +10,21 @@ export const getDetailProduct = async (id) => {
     return response;
 }
 
+export const createProducts = async (data) => {
+    const response = await axios.post(`/product/createProduct/`, data);
+    return response;
+}
+
+export const UpdateProducts = async (data, id) => {
+    const response = await axios.put(`/product/updateProduct/${id}`, data);
+    return response;
+}
+
+export const DeleteProducts = async (id) => {
+    const response = await axios.delete(`/product/deleteProduct/${id}`);
+    return response;
+}
+
 export const Ratings = async (data) => {
     const response = await axios.put(`/product/ratings`, data);
     return response;

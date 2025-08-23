@@ -7,9 +7,9 @@ const { verifyAccessToken, isAdmin } = require("../middlewares/verifyToken");
 const uploadder = require("../config/uploadCloudinary");
 
 router.get("/getAllProducts", ProductController.getAllProduct);
-router.post("/createProduct", [verifyAccessToken, isAdmin], ProductController.createProduct);
+router.post("/createProduct", [verifyAccessToken, isAdmin], uploadder.single("images"), ProductController.createProduct);
 router.get("/getDetailProduct/:pid", ProductController.getDetailProduct);
-router.put("/updateProduct/:pid", ProductController.updateProduct);
+router.put("/updateProduct/:pid", uploadder.single("images"), ProductController.updateProduct);
 router.delete("/deleteProduct/:pid", ProductController.deleteProduct);
 router.put("/ratings", verifyAccessToken, ProductController.ratings);
 router.delete("/deleteComment/:pid/:cid", verifyAccessToken, ProductController.deleteComment);

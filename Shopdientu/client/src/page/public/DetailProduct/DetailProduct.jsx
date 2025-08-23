@@ -7,14 +7,14 @@ import Slider from "react-slick";
 import { ProductSimilar, Quantity, DescriptionProduct } from "../../../component/index"
 
 const DetailProduct = () => {
+
     const { pid, title } = useParams();
     const sliderRef = useRef(null);
     const [product, setProduct] = useState(null);
-
     const [indexVariant, setIndexVariant] = useState(0);
     const [indexVarIn, setIndexIn] = useState(0);
-
     const [quantity, setQuantity] = useState(1)
+
     useEffect(() => {
         const FetchProductDetail = async () => {
             const data = await getDetailProduct(pid);
@@ -60,7 +60,6 @@ const DetailProduct = () => {
                         cursor: "pointer",
                         transform: "translateY(-30%)",
                     }}
-
                 />
             );
         },

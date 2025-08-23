@@ -46,11 +46,11 @@ const Header = () => {
         await LogoutUser();
     }
 
+
+
     return <>
         <div>
-            {/* Banner trên cùng */}
             <div>
-
                 <div>
                     <img
                         src="https://cdnv2.tgdd.vn/mwg-static/tgdd/Banner/be/b4/beb45d43aa9e49302f0148ff234854a1.png"
@@ -59,18 +59,15 @@ const Header = () => {
                         style={{ height: "47px", objectFit: "cover" }}
                     />
                 </div>
-
             </div>
             <nav
                 className="navbar navbar-expand-lg fixed-top navbar-light"
                 style={{ backgroundColor: "#ffd400", display: "flex", flexDirection: "column", top: showBanner ? "47px" : "0", zIndex: 900, }}
             >
                 <div className="container-fluid" style={{ padding: "0 30px" }}>
-
                     <Link className="navbar-brand fw-bold" to={`/${path.HOME}`}>
                         DungNV
                     </Link>
-
                     <button
                         className="navbar-toggler"
                         type="button"
@@ -156,24 +153,37 @@ const Header = () => {
                                 {
                                     isLogIn ? (<>
                                         <div className="nav-item dropdown">
-
                                             <Link className="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                                                 <FaRegUser /> {current?.name}
                                             </Link>
-
                                             <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
                                                 <li>
                                                     <Link className="dropdown-item" to={path.PROFILE} >
                                                         Profile
                                                     </Link>
                                                 </li>
+                                                {isLogIn && current?.role === "1945" && (
+                                                    <li>
+                                                        <Link className="dropdown-item" to={`${path.MEMBER}/${path.PERSONAL}`}>
+                                                            Riêng tư
+                                                        </Link>
+                                                    </li>
+                                                )}
+                                                {isLogIn && current?.role === "1975" && (
+                                                    <li>
+                                                        <Link className="dropdown-item" to={`${path.ADMIN}/${path.MANAGER_USER}`}>
+                                                            Quản lý
+                                                        </Link>
+                                                    </li>
+                                                )}
                                                 <li>
                                                     <button className="dropdown-item" onClick={(e) => { hanleLogOut(e) }} >
                                                         <IoIosLogOut />   Đăng xuất
                                                     </button>
                                                 </li>
                                             </ul>
-                                        </div>                          </>) :
+                                        </div>
+                                    </>) :
                                         (<>
                                             <Link className="nav-link" to={path.LOGIN}>
                                                 <FaRegUser /> Đăng nhập

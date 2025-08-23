@@ -105,6 +105,7 @@ const ProductCa = () => {
                     <InputSelect value={sortSelect} options={sortBy} onChange={handleSortChange} />
                 </div>
             </div>
+
             <div style={{ padding: "20px 10px" }}>
                 <Masonry
                     breakpointCols={breakpointColumnsObj}

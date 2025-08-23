@@ -35,3 +35,17 @@ export const LogoutUser = async () => {
     return response;
 }
 
+export const GetAllUsers = async (data) => {
+    const response = await axios.get("/user/getAllUsers", { params: data });
+    return response;
+}
+
+export const UpdateUsers = async (data, uid) => {
+    const response = await axios.put(`/user/updateUserbyAdmin/${uid}`, data);
+    return response;
+}
+
+export const DeleteUsers = async (uid) => {
+    const response = await axios.delete(`/user/deleteUser?_id=${uid}`);
+    return response;
+}

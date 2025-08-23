@@ -10,8 +10,9 @@ import { Ratings } from "../../api/Product";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-
+import ReactMarkdown from "react-markdown";
 import moment from "moment";
+import DOMPurify from "dompurify";
 import 'moment/locale/vi';
 
 
@@ -23,11 +24,6 @@ const DescriptionProduct = ({ name, pid, description = "Chưa có mô tả sản
     const [textrate, setTextRate] = useState("");
     const [starrate, setStarState] = useState(0);
     const navigate = useNavigate();
-    moment.locale('vi');
-    const displayText = isExpanded
-        ? description
-        : description?.slice(0, maxLength) + (description?.length > maxLength ? "..." : "");
-
     const stats = Array.from({ length: 5 }, (_, i) => ({
         star: 5 - i,
         count: 0
@@ -105,17 +101,10 @@ const DescriptionProduct = ({ name, pid, description = "Chưa có mô tả sản
         </div>
         <div className="p-2">
             {indextab === 0 && (
-                <div>
-                    <p>{displayText}</p>
-                    {description?.length > maxLength && (
-                        <button
-                            type="button"
-                            onClick={() => setIsExpanded(!isExpanded)}
-                            className="btn btn-info"
-                        >
-                            {isExpanded ? "Thu gọn" : "Xem thêm"}
-                        </button>
-                    )}
+                <div className="border p-3 mt-2"
+                    dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(description),
+                    }}>
                 </div>
             )}
             {indextab === 2 && (

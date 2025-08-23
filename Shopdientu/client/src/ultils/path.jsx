@@ -1,9 +1,9 @@
 
 export const path = {
     PUBLIC: "/",
-    HOME: "",
+    HOME: "/",
     ALL: "*",
-    LOGIN: "login",
+    LOGIN: "/login",
     BLOG: "blogs",
     OUT_SERVICER: "servicer",
     FAQ: "faqs",
@@ -13,6 +13,18 @@ export const path = {
     FINAl_REGISTER: "finalRegister/:status",
     RESET_PASSWORD: "reset-password/:token",
     PROFILE: "profile",
-    PRODUCTCA: "/:category"
+    PRODUCTCA: "/:category",
+
+    // admin
+    ADMIN: "/admin",
+    DASHBOARD: "dashboard",
+    MANAGER_PRODUCT: "manager-product",
+    MANAGER_USER: "manager-user",
+    MANAGER_ORDER: "manager-order",
+    CREATE_PRODUCT: "create-product",
+
+    // member
+    MEMBER: "/member",
+    PERSONAL: "personal",
 }
 

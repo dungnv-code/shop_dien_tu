@@ -22,7 +22,6 @@ const Navbar = () => {
         fetchData();
     }, []);
 
-
     return <>
         <div className="d-flex justify-content-center gap-4" style={{
             backgroundColor: "#ffd400", padding: "0 30px", fontSize: "20px",

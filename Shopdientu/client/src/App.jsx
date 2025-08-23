@@ -5,6 +5,11 @@ import {
   Public, Home, Login, Blog, DetailProduct, Servicer,
   FAQ, Contact, FinalRegister, ResetPassword, Profile, ProductCa
 } from "./page/public";
+
+import { AdminLayout, Dashboard, CreateProduct, ManagerUser, ManagerProduct, ManagerOrder } from "./page/admin";
+
+import { MemberLayout, Personal } from "./page/member";
+
 import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -13,13 +18,21 @@ import { Loading } from './component';
 
 function AppContent() {
   const { loading, loadingText } = useContext(LoadingContext);
-
   return (
     <>
-      {/* Hiển thị loading overlay nếu đang loading */}
       {loading && <Loading text={loadingText} />}
-
       <Routes>
+        <Route path={path.ADMIN} element={<AdminLayout />}>
+          <Route path={path.DASHBOARD} element={<Dashboard />} />
+          <Route path={path.MANAGER_PRODUCT} element={<ManagerProduct />} />
+          <Route path={path.MANAGER_USER} element={<ManagerUser />} />
+          <Route path={path.MANAGER_ORDER} element={<ManagerOrder />} />
+          <Route path={path.CREATE_PRODUCT} element={<CreateProduct />} />
+        </Route>
+        <Route path={path.MEMBER} element={<MemberLayout />}>
+          <Route path={path.PERSONAL} element={<Personal />} />
+        </Route>
+
         <Route path={path.PUBLIC} element={<Public />}>
           <Route path={path.HOME} element={<Home />} />
           <Route path={path.BLOG} element={<Blog />} />
@@ -29,7 +42,9 @@ function AppContent() {
           <Route path={path.OUT_SERVICER} element={<Servicer />} />
           <Route path={path.PROFILE} element={<Profile />} />
           <Route path={path.PRODUCTCA} element={<ProductCa />} />
+          <Route path={path.ALL} element={<Home />} />
         </Route>
+
         <Route path={path.RESET_PASSWORD} element={<ResetPassword />} />
         <Route path={path.FINAl_REGISTER} element={<FinalRegister />} />
         <Route path={path.LOGIN} element={<Login />} />

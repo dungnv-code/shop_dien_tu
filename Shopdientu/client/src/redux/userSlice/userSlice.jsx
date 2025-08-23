@@ -26,10 +26,13 @@ export const UsertSlice = createSlice({
         builder.addCase(action.getCurrent.fulfilled, (state, action) => {
             state.isLoading = false;
             state.current = action.payload;
+            state.isLogIn = true;
         })
         builder.addCase(action.getCurrent.rejected, (state, action) => {
             state.isLoading = false;
             state.current = null;
+            state.isLogIn = false;
+            state.token = null;
         })
     }
 })

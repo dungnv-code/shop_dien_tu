@@ -8,7 +8,6 @@ export const LoadingProvider = ({ children }) => {
     const [loadingText, setLoadingText] = useState("Đang xử lý...");
 
     useEffect(() => {
-        // đăng ký khi Provider mount
         loadingController.register(setLoading, setLoadingText);
         return () => loadingController.unregister();
     }, []);

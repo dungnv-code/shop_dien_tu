@@ -14,3 +14,4 @@ export { default as DescriptionProduct } from "./discriptionProduct/DiscriptionP
 export { default as FilterPro } from "./FilterPro/FilterPro";
 export { default as InputSelect } from "./inputSelect/InputSelect";
 export { default as PaginationCustom } from "./pagination/Pagination";
+export { default as Adminsibar } from "./adminSibar/Adminsibar";

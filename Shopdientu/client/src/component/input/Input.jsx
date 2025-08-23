@@ -1,7 +1,7 @@
 // Input.jsx
 import "./Input.css";
 
-const Input = ({ value, setValue, name, type = "text", placeholder = "Chưa có" }) => {
+const Input = ({ value = "", setValue, name, type = "text", placeholder = "Chưa có" }) => {
     return (
         <div className="m-2 w-100 " style={{ position: "relative" }}>
             {

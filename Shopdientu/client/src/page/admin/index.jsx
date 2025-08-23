@@ -1,0 +1,6 @@
+export { default as AdminLayout } from "./Adminlayout/Adminlayout"
+export { default as CreateProduct } from "./CreateProduct/CreateProduct"
+export { default as ManagerUser } from "./ManagerUser/ManagerUser"
+export { default as Dashboard } from "./Dashbroad/Dashbroad"
+export { default as ManagerProduct } from "./ManagerProduct/ManagerProduct"
+export { default as ManagerOrder } from "./ManagerOrder/ManagerOrder"

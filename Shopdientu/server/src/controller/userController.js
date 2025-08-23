@@ -5,7 +5,10 @@ const jwt = require('jsonwebtoken')
 const uniqid = require('uniqid');
 const sendMail = require('../ultils/sendMail')
 const makeToken = require("../ultils/maketoken.js")
-const crypto = require('crypto')
+const crypto = require('crypto');
+
+const Order = require('../modal/order');
+const Product = require('../modal/product');
 
 class UserController {
     // truyền thống
@@ -170,6 +173,7 @@ class UserController {
             })
         // plain object
         const response = await User.findOne({ email })
+
         if (response && await response.isCorrectPassword(password)) {
             // Tách password và role ra khỏi response
             const { password, role, refreshToken, ...userData } = response.toObject()
@@ -192,9 +196,8 @@ class UserController {
     })
 
     getCurrent = asyncHandler(async (req, res) => {
-        console.log(req.user);
         const { _id } = req.user
-        const user = await User.findById(_id).select('-refreshToken -password -role')
+        const user = await User.findById(_id).select('-refreshToken -password')
         return res.status(200).json({
             success: user ? true : false,
             rs: user ? user : 'Không tìm thấy người dùng'
@@ -231,7 +234,7 @@ class UserController {
 
     forgotPassword = asyncHandler(async (req, res) => {
         const { email } = req.body
-        console.log(email)
+
         if (!email) throw new Error('Thiếu email')
         const user = await User.findOne({ email })
         if (!user) throw new Error('Không tìm thấy email người dùng')
@@ -269,15 +272,102 @@ class UserController {
     })
 
     getAllUsers = asyncHandler(async (req, res) => {
-        const response = await User.find().select('-refreshToken -password -role')
-        return res.status(200).json({
-            success: response ? true : false,
-            users: response
-        })
+        const queries = { ...req.query };
+        const excludeFields = ["limit", "sort", "page", "fields", "random", "seed"];
+        excludeFields.forEach(el => delete queries[el]);
+        const filter = {};
+        for (const key in queries) {
+            const match = key.match(/^(\w+)\[(gte|gt|lte|lt)\]$/);
+            if (match) {
+                const [_, field, op] = match;
+                filter[field] = filter[field] || {};
+                filter[field][`$${op}`] = Number(req.query[key]);
+            } else if (key === "name") {
+                filter.name = { $regex: queries[key], $options: "i" };
+            } else {
+                // Nếu giá trị có dấu phẩy → lọc theo nhiều giá trị
+                if (typeof queries[key] === "string" && queries[key].includes(",")) {
+                    filter[key] = { $in: queries[key].split(",") };
+                } else {
+                    filter[key] = queries[key];
+                }
+            }
+        }
+
+        try {
+            const seedrandom = require("seedrandom");
+            const isRandom = req.query.random === "true";
+            const limit = Number(req.query.limit);
+            const sort = req.query.sort || "-createdAt";
+            const page = Number(req.query.page) || 1;
+            const skip = (page - 1) * limit;
+            const seed = req.query.seed || "default-seed";
+
+            if (isRandom) {
+                const filteredProducts = await User.find(filter).lean();
+                const rng = seedrandom(seed);
+
+                const shuffled = filteredProducts
+                    .map(p => ({ p, sortKey: rng() }))
+                    .sort((a, b) => a.sortKey - b.sortKey)
+                    .map(el => el.p);
+
+                const selected = shuffled.slice(0, limit);
+
+                return res.status(200).json({
+                    success: true,
+                    productDatas: selected,
+                    counts: selected.length,
+                    totalPages: 1,
+                    currentPage: 1,
+                });
+            } else {
+                // Xử lý truy vấn bình thường (có phân trang, sắp xếp,...)
+                const productQuery = User.find(filter)
+                    .sort(sort)
+                    .skip(skip)
+                    .limit(limit);
+
+                const [products, total] = await Promise.all([
+                    productQuery.lean(),
+                    User.countDocuments(filter)
+                ]);
+
+                return res.status(200).json({
+                    success: true,
+                    userDatas: products,
+                    counts: total,
+                    totalPages: Math.ceil(total / limit),
+                    currentPage: page,
+                });
+            }
+        } catch (err) {
+            return res.status(500).json({ success: false, message: err.message });
+        }
     })
 
     deleteUser = asyncHandler(async (req, res) => {
-        const { _id } = req.query
+        const { _id } = req.query;
+
+        if (!_id) throw new Error('Thiếu đầu vào');
+
+        const checkOrder = await Order.findOne({ orderBy: _id });
+        if (checkOrder) {
+            return res.status(400).json({
+                success: false,
+                message: "Không thể xoá người dùng này vì có đơn hàng liên quan"
+            });
+        }
+
+        const checkRating = await Product.findOne({ "ratings.postedBy": _id });
+
+        if (checkRating) {
+            return res.status(400).json({
+                success: false,
+                message: "Không thể xoá người dùng này vì đã có đánh giá sản phẩm liên quan"
+            });
+        }
+
         if (!_id) throw new Error('Missing inputs')
         const response = await User.findByIdAndDelete(_id)
         return res.status(200).json({

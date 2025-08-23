@@ -1,0 +1,52 @@
+.line_wrap {
+    white-space: normal;
+    /* Cho phép xuống dòng */
+    word-wrap: break-word;
+    /* Tự xuống khi quá dài */
+    word-break: break-word;
+    /* Bẻ từ nếu quá dài */
+    max-width: 200px;
+    /* Giới hạn độ rộng cột để ép xuống dòng */
+}
+
+.table-custom {
+    border-radius: 12px;
+    /* bo góc */
+    overflow: hidden;
+    /* tránh tràn góc */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    /* đổ bóng nhẹ */
+}
+
+.table-custom th {
+    background-color: #f8f9fa;
+    /* nền header sáng */
+    color: #333;
+    font-weight: 600;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.table-custom td {
+    vertical-align: middle;
+    padding: 12px 16px;
+    font-size: 14px;
+    color: #444;
+}
+
+.table-custom tr:nth-child(even) {
+    background-color: #fafafa;
+    /* màu xen kẽ */
+}
+
+.table-custom tr:hover {
+    background-color: #f1f5f9;
+    /* hover highlight */
+}
+
+.line_wrap {
+    white-space: normal !important;
+    word-break: break-word;
+    max-width: 200px;
+    /* ép chiều rộng */
+}
