@@ -49,3 +49,18 @@ export const DeleteUsers = async (uid) => {
     const response = await axios.delete(`/user/deleteUser?_id=${uid}`);
     return response;
 }
+
+export const UpdatebyUsers = async (data) => {
+    const response = await axios.put(`/user/updateUser`, data);
+    return response;
+}
+
+export const AddCartUser = async (data) => {
+    const response = await axios.post(`user/updateCart`, data);
+    return response;
+}
+
+export const RemoveCart = async (id) => {
+    const response = await axios.delete(`user/removeCart/${id}`);
+    return response;
+}

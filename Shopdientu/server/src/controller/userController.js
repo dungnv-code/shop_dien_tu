@@ -377,15 +377,37 @@ class UserController {
     })
 
     updateUser = asyncHandler(async (req, res) => {
-        // 
-        const { _id } = req.user
-        if (!_id || Object.keys(req.body).length === 0) throw new Error('Thiếu đầu vào')
-        const response = await User.findByIdAndUpdate(_id, req.body, { new: true }).select('-password -role -refreshToken')
+        const { _id } = req.user;
+        if (!_id || (Object.keys(req.body).length === 0 && !req.file)) {
+            throw new Error('Thiếu đầu vào');
+        }
+
+        const updateData = { ...req.body };
+
+        if (req.file) {
+            // nếu dùng local
+            updateData.image = req.file.path;
+
+            // nếu dùng Cloudinary thì:
+            // const result = await cloudinary.uploader.upload(req.file.path);
+            // updateData.image = result.secure_url;
+        } else {
+            // không có file thì giữ nguyên ảnh cũ
+            delete updateData.image;
+        }
+
+        const response = await User.findByIdAndUpdate(
+            _id,
+            updateData,
+            { new: true }
+        ).select('-password -role -refreshToken');
+
         return res.status(200).json({
-            success: response ? true : false,
-            updatedUser: response ? response : 'Đã có lỗi xảy ra'
-        })
-    })
+            success: !!response,
+            updatedUser: response || 'Đã có lỗi xảy ra'
+        });
+    });
+
 
     updateUserByAdmin = asyncHandler(async (req, res) => {
         const { uid } = req.params
@@ -399,27 +421,68 @@ class UserController {
 
     updateCart = asyncHandler(async (req, res) => {
         const { _id } = req.user;
+        const { product, color, size, quantity } = req.body;
 
-        const check = await User.findOne({
-            _id: _id,
-            cart: {
-                $elemMatch: {
-                    color: req.body.color,
-                    size: req.body.size
-                }
-            }
-        });
-
-
-        if (check) {
-            return res.json("Sản phẩm đã tồn tại");
+        // productId là bắt buộc
+        if (!product) {
+            return res.status(400).json({
+                success: false,
+                mes: "Thiếu productId"
+            });
         }
 
-        const user = await User.findByIdAndUpdate(_id, { $push: { cart: req.body } }, { new: true })
+        // tạo điều kiện match
+        const match = { product };
+        if (color) match.color = color;
+        if (size) match.size = size;
 
-        res.status(200).json(user);
-    })
+        // kiểm tra trong giỏ đã có chưa
+        const check = await User.findOne({
+            _id,
+            cart: { $elemMatch: match }
+        });
+
+        if (check) {
+            return res.status(400).json({
+                success: false,
+                mes: "Sản phẩm đã tồn tại trong giỏ"
+            });
+        }
+
+        // chưa có thì thêm vào giỏ
+        const user = await User.findByIdAndUpdate(
+            _id,
+            { $push: { cart: { ...req.body } } },
+            { new: true }
+        );
+        return res.status(200).json({
+            success: true,
+            mes: "Thêm sản phẩm vào giỏ thành công",
+            cart: user.cart
+        });
+    });
+
+    // chưa có thì
 
 
+    removeCart = asyncHandler(async (req, res) => {
+        const { _id } = req.user;
+        const { cid } = req.params;
+        const user = await User.findByIdAndUpdate(
+            _id,
+            { $pull: { cart: { _id: cid } } },
+            { new: true }
+        ).select("cart");
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json({
+            message: "Removed item from cart successfully",
+            cart: user.cart,
+        });
+    });
 }
+
 module.exports = new UserController;

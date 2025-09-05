@@ -1,6 +1,7 @@
 const Product = require('../modal/product')
 const asyncHandler = require('express-async-handler')
-const slugify = require('slugify')
+const slugify = require('slugify');
+
 
 class ProductControlller {
     createProduct = asyncHandler(async (req, res) => {
@@ -257,33 +258,27 @@ class ProductControlller {
             if (!pid || !size || !color || price == null) {
                 return res.status(400).json({ message: "Thiếu dữ liệu bắt buộc." });
             }
-            if (!req.file) throw new Error("Thiếu đầu vào");
 
             const product = await Product.findById(pid);
-            if (!product) return res.status(404).json({ message: "Không tìm thấy sản phẩm." });
-
-            // Tìm variant theo size
-            const variant = product.variants.find(v => v.size === size);
-
-            if (variant) {
-                // Kiểm tra trùng color
-                if (variant.color.includes(color)) {
-                    return res.status(400).json({ message: "Màu này đã tồn tại trong size đã chọn." });
-                }
-
-                // Thêm vào mảng
-                variant.color.push(color);
-                variant.price.push(price);
-                variant.image.push(req.file.path || "");
-            } else {
-                // Chưa có size đó → tạo mới
-                product.variants.push({
-                    size,
-                    color: [color],
-                    price: [price],
-                    image: [req.file.path || ""]
-                });
+            if (!product) {
+                return res.status(404).json({ message: "Không tìm thấy sản phẩm." });
             }
+
+            // Kiểm tra biến thể đã tồn tại chưa (size + color)
+            const exists = product.variants.find(
+                v => v.size === size && v.color === color
+            );
+            if (exists) {
+                return res.status(400).json({ message: "Biến thể này đã tồn tại." });
+            }
+
+            // Thêm biến thể mới
+            product.variants.push({
+                size,
+                color,
+                price,
+                image: req.file?.path || ""
+            });
 
             await product.save();
 
@@ -292,6 +287,52 @@ class ProductControlller {
             return res.status(500).json({ message: "Lỗi server.", error: err.message });
         }
     });
+
+    getVariantItem = asyncHandler(async (req, res) => {
+        const { pid } = req.params;
+        if (!pid) {
+            throw new Error("Thiếu đầu vào")
+        }
+
+        const data = await Product.findById(pid);
+
+        res.json({
+            success: true,
+            dataVariant: data.variants,
+        })
+    })
+
+    deleteVariant = asyncHandler(async (req, res) => {
+        const { pid, vid } = req.body; // productId và variantId từ request body
+
+        // Kiểm tra xem pid và vid có tồn tại không
+        if (!pid || !vid) {
+            throw new Error("Thiếu đầu vào");
+        }
+
+        // Tìm sản phẩm theo pid (productId)
+        const product = await Product.findById(pid);
+        if (!product) {
+            throw new Error("Không tìm thấy sản phẩm");
+        }
+
+        // Tìm và xóa variant trong mảng variants của sản phẩm
+        const variantIndex = product.variants.findIndex(variant => variant._id.toString() === vid); // Tìm index của variant trong mảng
+
+        if (variantIndex === -1) {
+            throw new Error("Không tìm thấy biến thể với ID này");
+        }
+
+        // Xóa variant khỏi mảng variants
+        product.variants.splice(variantIndex, 1);
+
+        // Lưu sản phẩm sau khi đã xóa variant
+        await product.save();
+
+        res.status(200).json({ message: "Xóa biến thể thành công" });
+    });
+
+
 
     upLoadImage = asyncHandler(async (req, res) => {
         const { pid } = req.params;

@@ -1,7 +1,6 @@
 const mongoose = require('mongoose'); // Erase if already required
 const bcrypt = require('bcrypt')
 const crypto = require('crypto');
-const { type } = require('os');
 
 
 var userSchema = new mongoose.Schema({
@@ -22,6 +21,10 @@ var userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    image: {
+        type: String,
+        default: "https://i.pinimg.com/736x/3c/ae/07/3cae079ca0b9e55ec6bfc1b358c9b1e2.jpg"
+    },
     role: {
         type: String,
         enum: ["1954", "1975"],
@@ -35,6 +38,10 @@ var userSchema = new mongoose.Schema({
                     ref: 'Product',
                     required: true
                 },
+                name: {
+                    type: String,
+                    required: true,
+                },
                 quantity: {
                     type: Number,
                     required: true,
@@ -46,11 +53,10 @@ var userSchema = new mongoose.Schema({
                 },
                 color: {
                     type: String,
-                    required: true
+
                 },
                 size: {
                     type: String,
-                    required: true
                 },
                 price: {
                     type: Number,

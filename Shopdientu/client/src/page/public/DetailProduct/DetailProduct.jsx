@@ -1,20 +1,19 @@
 import "./DetailProduct.css"
 import { useParams } from "react-router-dom";
 import { getDetailProduct } from "../../../api/Product";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Breadcrumbs } from "../../../component";
-import Slider from "react-slick";
 import { ProductSimilar, Quantity, DescriptionProduct } from "../../../component/index"
-
+import { AddCartUser } from "../../../api/User";
+import Swal from "sweetalert2";
 const DetailProduct = () => {
-
     const { pid, title } = useParams();
-    const sliderRef = useRef(null);
     const [product, setProduct] = useState(null);
-    const [indexVariant, setIndexVariant] = useState(0);
-    const [indexVarIn, setIndexIn] = useState(0);
-    const [quantity, setQuantity] = useState(1)
+    const [selectedSize, setSelectedSize] = useState(null);
+    const [selectedVariant, setSelectedVariant] = useState(null);
+    const [quantity, setQuantity] = useState(1);
 
+    // lấy sản phẩm
     useEffect(() => {
         const FetchProductDetail = async () => {
             const data = await getDetailProduct(pid);
@@ -23,51 +22,65 @@ const DetailProduct = () => {
             }
         }
         FetchProductDetail();
-    }, [product?.ratings])
+    }, [pid]);
 
-    const goToSlide = (index) => {
-        sliderRef.current.slickGoTo(index);
-        setIndexIn(index);
+    // gom variants theo size
+    const groupedVariants = product?.variants?.reduce((acc, variant) => {
+        if (!acc[variant.size]) acc[variant.size] = [];
+        acc[variant.size].push(variant);
+        return acc;
+    }, {}) || {};
+
+    // khi có product thì set mặc định variant đầu tiên
+    useEffect(() => {
+        if (product?.variants?.length > 0) {
+            const firstSize = product.variants[0].size;
+            setSelectedSize(firstSize);
+            setSelectedVariant(product.variants[0]);
+        }
+    }, [product]);
+
+    const handleSizeChange = (size) => {
+        setSelectedSize(size);
+        setSelectedVariant(groupedVariants[size][0]); // chọn màu đầu trong size đó
     };
 
-    const hanleGb = (index) => {
-        setIndexVariant(index);
-        setIndexIn(0);
-    }
+    const handleColorChange = (variant) => {
+        setSelectedVariant(variant);
+    };
 
-    const hanleCart = () => {
-        console.log(product?.variants?.[indexVariant]?.color?.[indexVarIn]);
-        console.log("quantify", quantity)
-    }
+    const handleCart = () => {
+        const cartItem = {
+            product: product._id,
+            name: product.title,
+            size: selectedVariant?.size || product.size || "",
+            color: selectedVariant?.color || product.color || "",
+            price: selectedVariant?.price || product.price,
+            quantity: quantity,
+            image: selectedVariant?.image || product.image || "",
+        };
 
-    const images = product?.variants?.[indexVariant]?.image || [];
-    const variantsst = product?.variants;
-
-    var settings = {
-        customPaging: function (i) {
-            return (
-                <img
-                    src={images[i]}
-                    alt={`thumb-${i}`}
-                    style={{
-                        width: 60,
-                        height: 60,
-                        objectFit: "cover",
-                        borderRadius: "8px",
-                        border: "1px solid #ddd",
-                        boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-                        transition: "transform 0.2s ease, box-shadow 0.2s ease",
-                        cursor: "pointer",
-                        transform: "translateY(-30%)",
-                    }}
-                />
-            );
-        },
-        dots: true,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1
+        const featchAddcartProduct = async () => {
+            console.log(cartItem)
+            try {
+                const reponsive = await AddCartUser(cartItem);
+                Swal.fire({
+                    title: 'Thêm vào giỏ hàng thành công',
+                    icon: 'success',
+                    timer: 2000, // 2 giây
+                    showConfirmButton: false // ẩn nút OK
+                })
+            } catch (err) {
+                console.log(err)
+                Swal.fire({
+                    title: err?.mes || 'Đã có lỗi sảy ra',
+                    icon: 'error',
+                    timer: 2000, // 2 giây
+                    showConfirmButton: false // ẩn nút OK
+                })
+            }
+        }
+        featchAddcartProduct()
     };
 
     return <div style={{ padding: "10px 25px" }}>
@@ -79,73 +92,69 @@ const DetailProduct = () => {
         </div>
         <div className="row product-row">
             <div className="col-lg-4 col-md-6 col-12 product-image">
-                {product?.variants?.length === 0 ? (
-                    <div style={{ width: "100%", height: 400 }}>
-                        <img
-                            src={product.image}
-                            style={{
-                                width: "100%",
-                                height: "100%",
-                                objectFit: "contain",
-                            }}
-                        />
-                    </div>
-                ) : (
-                    <Slider ref={sliderRef} {...settings}>
-                        {product?.variants?.[indexVariant]?.image?.map((item, idx) => (
-                            <div key={idx} style={{ width: "100%", height: 400 }}>
-                                <img
-                                    src={item}
-                                    alt=""
-                                    style={{
-                                        width: "100%",
-                                        height: "100%",
-                                        objectFit: "contain",
-                                    }}
-                                />
-                            </div>
-                        ))}
-                    </Slider>
-                )}
+                <div style={{ width: "100%", height: 400 }}>
+                    <img
+                        src={selectedVariant?.image || product?.image}
+                        alt={selectedVariant?.color}
+                        style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                    />
+                </div>
             </div>
 
+            {/* THÔNG TIN SẢN PHẨM */}
             <div className="col-lg-4 col-md-6 col-12" style={{ margin: "0 10px" }}>
                 <p className="product-title">{product?.title}</p>
                 <h4 className="product-price">
-                    {product?.variants?.length !== 0 ? product?.variants[indexVariant]?.price[indexVarIn].toLocaleString("vi-VN") : <>{product?.price.toLocaleString("vi-VN")}</>} đ
+                    {selectedVariant
+                        ? selectedVariant.price.toLocaleString("vi-VN")
+                        : product?.price?.toLocaleString("vi-VN")} đ
                 </h4>
-                <p>
-                    {product?.variants?.length !== 0 && (<> <b>màu sắc:</b> {product?.variants[indexVariant]?.color[indexVarIn]}</>)}
-                </p>
+                {selectedVariant && (
+                    <>
+                        <p><b>Màu sắc:</b> {selectedVariant.color}</p>
+                        <p><b>Dung lượng ổ cứng:</b> {selectedVariant.size}</p>
+                    </>
+                )}
+
+                {/* SIZE OPTION */}
+                <div className="d-flex gap-2 flex-wrap mb-2">
+                    {Object.keys(groupedVariants).map((size) => (
+                        <div
+                            key={size}
+                            onClick={() => handleSizeChange(size)}
+                            className={`border px-3 py-1 rounded ${size === selectedSize ? "bg-light" : ""}`}
+                        >
+                            {size}
+                        </div>
+                    ))}
+                </div>
+
+                {/* DANH SÁCH MÀU */}
                 <div className="row gap-1">
-                    {product?.variants[indexVariant]?.color.map((item, index) => (
-                        <div className="col-4" key={index}>
-                            <div className="item-box" onClick={() => { goToSlide(index) }}>
-                                <img src={images[index]} alt="al" />
-                                <div>{item}</div>
+                    {groupedVariants[selectedSize]?.map((variant) => (
+                        <div className="col-4" key={variant._id}>
+                            <div
+                                className={`item-box ${selectedVariant?._id === variant._id ? "active" : ""}`}
+                                onClick={() => handleColorChange(variant)}
+                            >
+                                <img src={variant.image} alt={variant.color} />
+                                <div>{variant.color}</div>
                             </div>
                         </div>
                     ))}
                 </div>
-                {
-                    product?.variants?.length !== 0 && (<><p><b>Dung lượng ổ cứng:</b> {variantsst?.[indexVariant]?.size} gb</p></>)
-                }
-                <div className="d-flex gap-2 flex-wrap">
-                    {product?.variants.map((variant, index) => (
-                        <div key={variant._id || index} onClick={() => { hanleGb(index) }} className="border px-3 py-1 rounded">
-                            {variant.size} gb
-                        </div>
-                    ))}
-                </div>
-                <div className="m-1">
-                    Đã bán: {product?.sold}
-                </div>
+
+                <div className="m-1">Đã bán: {product?.sold}</div>
+
                 <div>
                     <Quantity quantity={quantity} setQuantity={setQuantity} />
                 </div>
-                <button type="button" className="btn btn-danger mt-3" onClick={() => { hanleCart() }}>Thêm vào giỏ hàng</button>
+                <button type="button" className="btn btn-danger mt-3" onClick={handleCart}>
+                    Thêm vào giỏ hàng
+                </button>
             </div>
 
+            {/* BOX KHUYẾN MÃI */}
             <div className="col-lg-3 col-md-6 col-12 promo-box">
                 <div className="promo-title">KHUYẾN MÃI</div>
                 <ul>
@@ -156,16 +165,26 @@ const DetailProduct = () => {
                 </ul>
             </div>
         </div>
+
+        {/* MÔ TẢ SẢN PHẨM */}
         <div className="row" style={{ margin: "30px 0" }}>
             <div className="col-9 ">
-                {product && <DescriptionProduct name={product?.title} pid={product._id} description={product?.description} totalrating={product?.totalRating} rating={product?.ratings} />}
+                {product && (
+                    <DescriptionProduct
+                        name={product?.title}
+                        pid={product._id}
+                        description={product?.description}
+                        totalrating={product?.totalRating}
+                        rating={product?.ratings}
+                    />
+                )}
             </div>
-            <div className="col-3">
-                Blog
-            </div>
+            <div className="col-3">Blog</div>
         </div>
+
+        {/* SẢN PHẨM TƯƠNG TỰ */}
         {product?.category && <ProductSimilar category={product.category} />}
-    </ div >
+    </div>
 }
 
 export default DetailProduct;

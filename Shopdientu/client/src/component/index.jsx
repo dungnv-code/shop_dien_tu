@@ -15,3 +15,6 @@ export { default as FilterPro } from "./FilterPro/FilterPro";
 export { default as InputSelect } from "./inputSelect/InputSelect";
 export { default as PaginationCustom } from "./pagination/Pagination";
 export { default as Adminsibar } from "./adminSibar/Adminsibar";
+export { default as MemberSibar } from "./MemberSibar/MemberSibar";
+export { default as QuickView } from "./quickView/QuickView";
+

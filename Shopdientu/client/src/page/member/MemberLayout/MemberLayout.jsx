@@ -3,7 +3,7 @@ import { Navigate, Outlet } from "react-router-dom";
 import { path } from '../../../ultils/path';
 import { useSelector, useDispatch } from 'react-redux';
 import { getCurrent } from "../../../redux/userSlice/asyncActionUser";
-
+import { MemberSibar } from "../../../component/index"
 const MemberLayout = () => {
     const { isLogIn, current } = useSelector(state => state.user);
     const dispatch = useDispatch();
@@ -26,8 +26,12 @@ const MemberLayout = () => {
 
     return (
         <div className="member-layout">
-            <h1>MemberLayout</h1>
-            <Outlet />
+            <div>
+                <MemberSibar />
+            </div>
+            <div style={{ marginLeft: "20%" }}>
+                <Outlet />
+            </div>
         </div>
     );
 }

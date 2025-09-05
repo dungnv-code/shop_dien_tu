@@ -22,9 +22,11 @@ export const path = {
     MANAGER_USER: "manager-user",
     MANAGER_ORDER: "manager-order",
     CREATE_PRODUCT: "create-product",
-
     // member
     MEMBER: "/member",
+    WISHLIST: "wishlist",
+    HISTORY: "history",
+    MYCART: "mycart",
     PERSONAL: "personal",
 }
 

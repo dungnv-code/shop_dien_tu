@@ -25,6 +25,22 @@ export const DeleteProducts = async (id) => {
     return response;
 }
 
+export const getVariant = async (id) => {
+    const response = await axios.get(`/product/getVariantItem/${id}`);
+    return response;
+}
+
+export const addVariant = async (data) => {
+    const response = await axios.post(`/product/addVariantItem`, data);
+    return response;
+}
+
+export const deleteVariant = async (data) => {
+    const response = await axios.delete(`/product/deleteVariant`, { data }); // Thay đổi: đặt `data` vào trong object `{ data: data }`
+    return response;
+}
+
+
 export const Ratings = async (data) => {
     const response = await axios.put(`/product/ratings`, data);
     return response;

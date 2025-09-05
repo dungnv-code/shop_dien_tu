@@ -14,6 +14,8 @@ router.delete("/deleteProduct/:pid", ProductController.deleteProduct);
 router.put("/ratings", verifyAccessToken, ProductController.ratings);
 router.delete("/deleteComment/:pid/:cid", verifyAccessToken, ProductController.deleteComment);
 router.post("/addVariantItem", [verifyAccessToken, isAdmin], uploadder.single("images"), ProductController.addVariantItem);
+router.get("/getVariantItem/:pid", [verifyAccessToken, isAdmin], ProductController.getVariantItem);
+router.delete("/deleteVariant", [verifyAccessToken, isAdmin], ProductController.deleteVariant);
 router.post("/upLoadImage/:pid", [verifyAccessToken, isAdmin], uploadder.single("images"), ProductController.upLoadImage);
 
 
