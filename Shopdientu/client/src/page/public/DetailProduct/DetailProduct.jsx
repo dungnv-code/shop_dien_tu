@@ -6,13 +6,15 @@ import { Breadcrumbs } from "../../../component";
 import { ProductSimilar, Quantity, DescriptionProduct } from "../../../component/index"
 import { AddCartUser } from "../../../api/User";
 import Swal from "sweetalert2";
+import { getCurrent } from "../../../redux/userSlice/asyncActionUser";
+import { useDispatch } from "react-redux";
 const DetailProduct = () => {
     const { pid, title } = useParams();
     const [product, setProduct] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
     const [selectedVariant, setSelectedVariant] = useState(null);
     const [quantity, setQuantity] = useState(1);
-
+    const dispatch = useDispatch()
     // lấy sản phẩm
     useEffect(() => {
         const FetchProductDetail = async () => {
@@ -61,21 +63,22 @@ const DetailProduct = () => {
         };
 
         const featchAddcartProduct = async () => {
-            console.log(cartItem)
+
             try {
                 const reponsive = await AddCartUser(cartItem);
                 Swal.fire({
                     title: 'Thêm vào giỏ hàng thành công',
                     icon: 'success',
-                    timer: 2000, // 2 giây
+                    timer: 1000, // 2 giây
                     showConfirmButton: false // ẩn nút OK
                 })
+                await dispatch(getCurrent())
             } catch (err) {
                 console.log(err)
                 Swal.fire({
                     title: err?.mes || 'Đã có lỗi sảy ra',
                     icon: 'error',
-                    timer: 2000, // 2 giây
+                    timer: 1000, // 2 giây
                     showConfirmButton: false // ẩn nút OK
                 })
             }

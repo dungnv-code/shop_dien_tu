@@ -1,42 +1,49 @@
 import { createSlice } from '@reduxjs/toolkit';
 import * as action from "./asyncActionUser";
 
-export const UsertSlice = createSlice({
+export const UserSlice = createSlice({
     name: 'user',
     initialState: {
         isLogIn: false,
         current: null,
-        token: false,
+        token: null,
+        isLoading: false,
     },
 
     reducers: {
         LogIn: (state, action) => {
-            state.isLogIn = action.payload.isLogIn;
+            state.isLogIn = true;
             state.token = action.payload.token;
         },
-        LogOut: (state, action) => {
+        LogOut: (state) => {
             state.isLogIn = false;
             state.token = null;
+            state.current = null;   // reset luôn user khi logout
+        },
+        updateCart: (state, action) => {
+            if (state.current) {
+                state.current.cart = action.payload; // cập nhật giỏ hàng
+            }
         }
     },
+
     extraReducers: (builder) => {
-        builder.addCase(action.getCurrent.pending, (state, action) => {
+        builder.addCase(action.getCurrent.pending, (state) => {
             state.isLoading = true;
-        })
+        });
         builder.addCase(action.getCurrent.fulfilled, (state, action) => {
             state.isLoading = false;
-            state.current = action.payload;
+            state.current = action.payload; // payload = user
             state.isLogIn = true;
-        })
-        builder.addCase(action.getCurrent.rejected, (state, action) => {
+        });
+        builder.addCase(action.getCurrent.rejected, (state) => {
             state.isLoading = false;
             state.current = null;
             state.isLogIn = false;
             state.token = null;
-        })
+        });
     }
-})
+});
 
-export const { LogIn, LogOut } = UsertSlice.actions;
-
-export default UsertSlice.reducer;
+export const { LogIn, LogOut, updateCart } = UserSlice.actions;
+export default UserSlice.reducer;

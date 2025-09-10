@@ -4,6 +4,7 @@ import { BsFillInfoCircleFill } from "react-icons/bs";
 import { IoIosLogOut } from "react-icons/io";
 import { useTranslation } from "react-i18next";
 import { BiSolidContact } from "react-icons/bi";
+import { FaRegWindowClose } from "react-icons/fa";
 import { path } from "../../ultils/path";
 import { Link } from "react-router-dom";
 import Navbar from "../navbar/Navbar"
@@ -11,12 +12,14 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getCurrent } from "../../redux/userSlice/asyncActionUser";
 import { LogOut } from "../../redux/userSlice/userSlice";
-import { LogoutUser } from "../../api/User";
+import { LogoutUser, RemoveCart } from "../../api/User";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 const Header = () => {
     const { isLogIn, current } = useSelector(state => state.user);
     const [showBanner, setShowBanner] = useState(true);
     const dispatch = useDispatch();
-
+    const navigate = useNavigate()
     useEffect(() => {
         isLogIn && dispatch(getCurrent());
     }, [isLogIn, dispatch]);
@@ -40,16 +43,83 @@ const Header = () => {
         localStorage.setItem("lang", lng);
     };
 
+    const hanleRemoveCart = (id) => {
+        const FeatchRemoveCart = async () => {
+            try {
+                const reponse = await RemoveCart(id)
+                await dispatch(getCurrent())
+                Swal.fire({
+                    title: reponse?.mes || 'Xoá thành công',
+                    icon: 'success',
+                    timer: 1000, // 2 giây
+                    showConfirmButton: false // ẩn nút OK
+                })
+            } catch (err) {
+                Swal.fire({
+                    title: err?.mes || 'Đã có lỗi sảy ra',
+                    icon: 'error',
+                    timer: 2000, // 2 giây
+                    showConfirmButton: false // ẩn nút OK
+                })
+            }
+        }
+        FeatchRemoveCart()
+    }
+
     const hanleLogOut = async (e) => {
         e.preventDefault();
         const data = await dispatch(LogOut());
         await LogoutUser();
     }
 
-
-
     return <>
         <div>
+            <div className="offcanvas offcanvas-end bg-dark text-white" id="cart">
+                <div className="offcanvas-header">
+                    <h1 className="offcanvas-title">Giỏ hàng</h1>
+                    <button type="button" className="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+                </div>
+                <div className="offcanvas-body">
+                    <div>
+                        {
+                            current?.cart.length == 0 && "Chưa có sản phẩm nào trong giỏ hàng"
+                        }
+                        {
+                            current?.cart.map((item, index) => {
+                                return <div key={index} className="d-flex justify-content-between align-items-center p-2">
+                                    <div>
+                                        <img src={item.image} style={{ objectFit: "contain" }} width={"70px"}></img>
+                                    </div>
+                                    <div>
+                                        <p
+                                            style={{
+                                                whiteSpace: "nowrap",       // ép 1 dòng duy nhất
+                                                overflow: "hidden",         // ẩn phần dư
+                                                textOverflow: "ellipsis",   // thêm dấu ...
+                                                maxWidth: "200px",          // phải có width hoặc maxWidth
+                                                display: "block",
+                                            }}
+                                        >
+                                            {item.name}
+                                        </p>
+                                        <div>{item.price} vnđ</div>
+                                        <div>Slượng: {item.quantity}</div>
+                                    </div>
+                                    <div>
+                                        <button type="button" onClick={() => { hanleRemoveCart(item._id) }} className="btn btn-primary"><FaRegWindowClose /></button>
+                                    </div>
+                                </div>
+                            })
+                        }
+                    </div>
+                    <hr />
+                    <div className="p-2">
+                        Tổng : {current?.cart.reduce((sum, el) => sum + el.price * el.quantity, 0).toLocaleString("vi-VN")} vnđ
+                    </div>
+                    <button className="btn btn-secondary" onClick={() => { navigate(`/${path.DETAILCART}`) }} type="button">
+                        Giỏ Hàng</button>
+                </div>
+            </div>
             <div>
                 <div>
                     <img
@@ -145,8 +215,8 @@ const Header = () => {
                                 </ul>
                             </li>
                             <li className="nav-item text-nowrap hover_item">
-                                <Link className="nav-link" to="#">
-                                    <FaShoppingCart /> Giỏ hàng
+                                <Link className="nav-link" data-bs-toggle="offcanvas" data-bs-target="#cart" to="#">
+                                    <FaShoppingCart /> Giỏ hàng ({current?.cart?.length ?? 0})
                                 </Link>
                             </li>
                             <li className="nav-item text-nowrap  hover_item">

@@ -3,7 +3,7 @@ import './App.css';
 import { path } from "./ultils/path";
 import {
   Public, Home, Login, Blog, DetailProduct, Servicer,
-  FAQ, Contact, FinalRegister, ResetPassword, Profile, ProductCa
+  FAQ, Contact, FinalRegister, ResetPassword, Profile, ProductCa, DetailCart, CheckOut
 } from "./page/public";
 
 import { AdminLayout, Dashboard, CreateProduct, ManagerUser, ManagerProduct, ManagerOrder } from "./page/admin";
@@ -45,6 +45,8 @@ function AppContent() {
           <Route path={path.OUT_SERVICER} element={<Servicer />} />
           <Route path={path.PROFILE} element={<Profile />} />
           <Route path={path.PRODUCTCA} element={<ProductCa />} />
+          <Route path={path.DETAILCART} element={<DetailCart />} />
+          <Route path={path.CHECKOUT} element={<CheckOut />} />
           <Route path={path.ALL} element={<Home />} />
         </Route>
 

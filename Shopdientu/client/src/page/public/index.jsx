@@ -12,3 +12,5 @@ export { default as FinalRegister } from "./finalRegister/finalRegister";
 export { default as ResetPassword } from "./ResetPassword/ResetPassword";
 export { default as Profile } from "./Profile/Profile";
 export { default as ProductCa } from "./productCa/ProductCa";
+export { default as DetailCart } from "./DetailCart/DetailCart";
+export { default as CheckOut } from "./CheckOut/CheckOut";

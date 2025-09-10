@@ -14,6 +14,8 @@ export const path = {
     RESET_PASSWORD: "reset-password/:token",
     PROFILE: "profile",
     PRODUCTCA: "/:category",
+    DETAILCART: "detailCart",
+    CHECKOUT: "checkout",
 
     // admin
     ADMIN: "/admin",
@@ -29,4 +31,3 @@ export const path = {
     MYCART: "mycart",
     PERSONAL: "personal",
 }
-

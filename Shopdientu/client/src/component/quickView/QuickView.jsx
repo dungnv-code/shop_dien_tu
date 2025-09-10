@@ -66,7 +66,28 @@ const QuickView = ({ pid }) => {
       quantity: quantity,
       image: selectedVariant?.image || product.image || "",
     };
-    console.log("🛒 Cart item:", cartItem);
+    const featchAddcartProduct = async () => {
+
+      try {
+        const reponsive = await AddCartUser(cartItem);
+        Swal.fire({
+          title: 'Thêm vào giỏ hàng thành công',
+          icon: 'success',
+          timer: 2000, // 2 giây
+          showConfirmButton: false // ẩn nút OK
+        })
+        await dispatch(getCurrent())
+      } catch (err) {
+        console.log(err)
+        Swal.fire({
+          title: err?.mes || 'Đã có lỗi sảy ra',
+          icon: 'error',
+          timer: 2000, // 2 giây
+          showConfirmButton: false // ẩn nút OK
+        })
+      }
+    }
+    featchAddcartProduct()
   };
 
   return (

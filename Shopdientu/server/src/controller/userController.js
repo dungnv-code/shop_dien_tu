@@ -462,8 +462,39 @@ class UserController {
         });
     });
 
-    // chưa có thì
+    updateCartQuantity = asyncHandler(async (req, res) => {
+        const { _id } = req.user; // id của user từ token
+        const { cid } = req.params; // id của item trong giỏ
+        const { quantity } = req.body; // số lượng mới
 
+        if (!cid || typeof quantity !== "number" || quantity < 1) {
+            return res.status(400).json({
+                success: false,
+                mes: "Thiếu cid hoặc quantity không hợp lệ"
+            });
+        }
+
+        const user = await User.findOneAndUpdate(
+            { _id, "cart._id": cid },
+            { $set: { "cart.$.quantity": quantity } },
+            { new: true } // trả về document đã update
+        );
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                mes: "Không tìm thấy sản phẩm trong giỏ"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            mes: "Cập nhật số lượng thành công",
+            cart: user.cart
+        });
+    });
+
+    // chưa có thì
 
     removeCart = asyncHandler(async (req, res) => {
         const { _id } = req.user;
@@ -479,7 +510,7 @@ class UserController {
         }
 
         res.status(200).json({
-            message: "Removed item from cart successfully",
+            mes: "Đã xóa sản phẩm khỏi giỏ hàng thành công",
             cart: user.cart,
         });
     });

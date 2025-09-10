@@ -3,7 +3,7 @@ import { Input, Button } from "../../../component";
 import { useCallback, useEffect, useState } from "react";
 import { LoginUser, RegisterUser, ForgotPasswordUser, finalRegisterUser } from "../../../api/User"
 import Swal from "sweetalert2"
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { path } from "../../../ultils/path";
 import { useDispatch } from "react-redux";
 import { LogIn } from "../../../redux/userSlice/userSlice";
@@ -19,6 +19,9 @@ const Login = () => {
         email: "",
         mobile: "",
     });
+
+    const [searchParams] = useSearchParams();
+    console.log(searchParams.get("redict"))
 
     const [emailForgot, setEmailForgot] = useState("");
     const [isRegister, setRegister] = useState(false);
@@ -69,7 +72,7 @@ const Login = () => {
                         confirmButtonText: "Về trang chủ"
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            navigate(`${path.HOME}`);
+                            searchParams.get("redict") ? navigate(searchParams.get("redict")) : navigate(`${path.HOME}`);
                         }
                     });
                 } else {

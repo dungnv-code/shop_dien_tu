@@ -64,3 +64,10 @@ export const RemoveCart = async (id) => {
     const response = await axios.delete(`user/removeCart/${id}`);
     return response;
 }
+
+export const UpdateQuantityCart = async (id, data) => {
+    console.log("cid", id)
+    console.log("cid", data)
+    const response = await axios.post(`user/updateCartQuantity/${id}`, data);
+    return response;
+}

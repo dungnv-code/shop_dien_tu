@@ -1,9 +1,10 @@
 import styles from "./product.module.css"
 import { IoMdStar, IoMdMenu } from "react-icons/io";
-import { FaEye, FaHeart, FaShoppingCart } from "react-icons/fa";
+import { FaEye, FaHeart, FaCartPlus } from "react-icons/fa";
+import { BsFillCartCheckFill } from "react-icons/bs";
 import { memo } from "react";
 import clsx from "clsx"
-import { Link } from "react-router-dom";
+import { createSearchParams, Link } from "react-router-dom";
 import { path } from "../../ultils/path";
 import { toSlug } from "../../ultils/helper";
 import WithBaseComponent from "../../HOC/withBaseComponent";
@@ -11,19 +12,21 @@ import { QuickView } from "../index"
 import { useState, useEffect, useRef } from "react";
 import { AddCartUser } from "../../api/User";
 import Swal from "sweetalert2";
-const Product = ({ dataProduct, navigate }) => {
+import { useSelector } from "react-redux";
+import { getCurrent } from "../../redux/userSlice/asyncActionUser";
+const Product = ({ dataProduct, navigate, dispatch }) => {
     const price = dataProduct.price.toLocaleString();
+    const { current } = useSelector((state) => state.user)
     const modalRef = useRef(null);
     const hanleClickWishList = (e) => {
         e.preventDefault()
-        console.log("wishlist")
+
     }
 
     const hanleQuickView = (e) => {
         e.preventDefault()
         const modal = new window.bootstrap.Modal(modalRef.current);
         modal.show();
-        console.log("cac")
     }
 
     const hanleAddtoCart = () => {
@@ -38,28 +41,35 @@ const Product = ({ dataProduct, navigate }) => {
         };
 
         const featchAddcartProduct = async () => {
-            console.log(cartItem)
             try {
                 const reponsive = await AddCartUser(cartItem);
+                await dispatch(getCurrent())
                 Swal.fire({
                     title: 'Thêm vào giỏ hàng thành công',
                     icon: 'success',
-                    timer: 2000, // 2 giây
+                    timer: 1000, // 2 giây
                     showConfirmButton: false // ẩn nút OK
                 })
             } catch (err) {
-                console.log(err)
+
                 Swal.fire({
-                    title: err?.mes || 'Đã có lỗi sảy ra',
+                    title: err?.mes || 'Đã có lỗi xảy ra',
                     icon: 'error',
-                    timer: 2000, // 2 giây
-                    showConfirmButton: false // ẩn nút OK
-                })
+                    showCancelButton: true, // hiện thêm 1 nút
+                    confirmButtonText: 'Đăng nhập', // text của nút chính
+                    cancelButtonText: 'Đóng',       // nút phụ
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        navigate({
+                            pathname: `${path.LOGIN}`,
+                            search: createSearchParams({ redict: location.pathname }).toString()
+                        })
+                    }
+                });
             }
         }
         featchAddcartProduct()
     }
-
 
     return <>
         <>
@@ -101,12 +111,25 @@ const Product = ({ dataProduct, navigate }) => {
                             <FaHeart className={clsx(styles.icon_style)} />
                         </div>
                         <div
-                            onClick={() => hanleAddtoCart()}
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
                             title="Thêm vào giỏ hàng"
                         >
-                            <FaShoppingCart className={clsx(styles.icon_style)} />
+                            {
+                                current?.cart.some((item) => item.product.toString() == dataProduct._id) ? (
+                                    <BsFillCartCheckFill
+                                        title="Đã có trong giỏ"
+                                        style={{ color: "green" }}
+                                        className={clsx(styles.icon_style)}
+                                    />
+                                ) : (
+                                    <FaCartPlus
+                                        title="Thêm vào giỏ"
+                                        onClick={() => hanleAddtoCart()}
+                                        className={clsx(styles.icon_style)}
+                                    />
+                                )
+                            }
                         </div>
 
                         <div
