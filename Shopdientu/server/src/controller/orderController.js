@@ -7,35 +7,32 @@ const asyncHandler = require('express-async-handler');
 class OrderControlller {
     createOrder = asyncHandler(async (req, res) => {
         const { _id } = req.user;
-        const cart = await User.findById(_id)
-            .select("cart")
-            .populate("cart.product", "title");
 
-        const products = cart?.cart?.map((el) => ({
-            product: el.product._id,
-            count: el.quantity,
-            color: el.color,
-            size: el.size,
-            image: el.image,
-            price: el.price,
-        }));
+        let { products, total, address, coupon } = req.body;
 
-        // Tính tổng tiền
-        let total = cart?.cart?.reduce((sum, el) => sum + el.price * el.quantity, 0);
-
-        // Kiểm tra và áp dụng mã giảm giá
-        const coupon = await Coupon.findById(req.body?.coupon);
-        if (coupon && coupon.discount) {
-            total = Math.round(total * (1 - coupon.discount / 100));
+        // Nếu có mã giảm giá
+        if (coupon) {
+            const couponDoc = await Coupon.findById(coupon);
+            if (couponDoc && couponDoc.discount) {
+                total = Math.round(total * (1 - couponDoc.discount / 100));
+            }
         }
 
-        const rs = await Order.create({ products, total, orderBy: _id });
+        // Nếu có địa chỉ thì update vào user
+        if (address) {
+            await User.findByIdAndUpdate(_id, { address, cart: [] }, { new: true });
+        }
 
-        res.status(200).json({
+        // Tạo đơn hàng
+        const rs = await Order.create({ products, total, orderBy: _id, coupon });
+
+        return res.status(200).json({
+            success: true,
             mes: "Success",
             data: rs
         });
     });
+
 
 
     getAllOrder = asyncHandler(async (req, res) => {

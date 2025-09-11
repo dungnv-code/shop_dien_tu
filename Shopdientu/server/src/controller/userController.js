@@ -514,6 +514,46 @@ class UserController {
             cart: user.cart,
         });
     });
+
+    updateAddress = asyncHandler(async (req, res) => {
+        const { _id } = req.user;
+        const { address } = req.body;
+
+        if (!_id) {
+            return res.status(401).json({
+                success: false,
+                message: "User chưa đăng nhập"
+            });
+        }
+
+        if (!address) {
+            return res.status(400).json({
+                success: false,
+                message: "Thiếu thông tin địa chỉ"
+            });
+        }
+
+        const response = await User.findByIdAndUpdate(
+            _id,
+            { address },
+            { new: true }
+        );
+
+        if (!response) {
+            return res.status(404).json({
+                success: false,
+                message: "Không tìm thấy user"
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Cập nhật địa chỉ thành công",
+            data: response.address
+        });
+    });
+
+
 }
 
 module.exports = new UserController;

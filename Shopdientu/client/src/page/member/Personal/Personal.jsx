@@ -15,6 +15,7 @@ const Personal = () => {
         name: "",
         email: "",
         mobile: "",
+        address: "",
         image: ""
     });
 
@@ -22,7 +23,8 @@ const Personal = () => {
         info.name !== current.name ||
         info.email !== current.email ||
         info.mobile !== current.mobile ||
-        (info.image && info.image instanceof File);
+        info.address !== current.address
+    // || (info.image && info.image instanceof File);
 
     useEffect(() => {
         dispatch(getCurrent())
@@ -30,11 +32,12 @@ const Personal = () => {
 
     useEffect(() => {
         setInfo({
-            name: current.name,
-            email: current.email,
-            mobile: current.mobile,
+            name: current?.name,
+            email: current?.email,
+            mobile: current?.mobile,
+            address: current?.address
         })
-        setPreview(current.image)
+        setPreview(current?.image)
     }, [current])
 
     const hanleSubmitForm = (e) => {
@@ -43,6 +46,7 @@ const Personal = () => {
         formData.append("name", info.name);
         formData.append("email", info.email);
         formData.append("mobile", info.mobile);
+        formData.append("address", info.address);
 
         if (info.image instanceof File) {
             formData.append("image", info.image);
@@ -80,6 +84,10 @@ const Personal = () => {
                         <div className="mb-3">
                             <label htmlFor="mobile">Số điện thoại</label>
                             <input type="text" className="form-control" value={info.mobile} id="mobile" onChange={(e) => { setInfo(prev => { return { ...prev, mobile: e.target.value } }) }} name="mobile" ></input>
+                        </div>
+                        <div className="mb-3">
+                            <label htmlFor="address">Địa chỉ</label>
+                            <input type="text" className="form-control" value={info.address} id="address" onChange={(e) => { setInfo(prev => { return { ...prev, address: e.target.value } }) }} name="address" ></input>
                         </div>
                         <div className="mb-3">
                             <label htmlFor="image">Ảnh</label>

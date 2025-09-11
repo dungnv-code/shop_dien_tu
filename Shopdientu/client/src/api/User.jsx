@@ -66,8 +66,6 @@ export const RemoveCart = async (id) => {
 }
 
 export const UpdateQuantityCart = async (id, data) => {
-    console.log("cid", id)
-    console.log("cid", data)
     const response = await axios.post(`user/updateCartQuantity/${id}`, data);
     return response;
 }

@@ -30,6 +30,9 @@ var userSchema = new mongoose.Schema({
         enum: ["1954", "1975"],
         default: "1954",
     },
+    address: {
+        type: String
+    },
     cart: {
         type: [
             {

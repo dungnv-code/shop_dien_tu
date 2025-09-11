@@ -19,5 +19,6 @@ router.put("/resetPassword", UserController.resetPassword);
 router.post("/updateCart", verifyAccessToken, UserController.updateCart);
 router.delete("/removeCart/:cid", verifyAccessToken, UserController.removeCart);
 router.post("/updateCartQuantity/:cid", verifyAccessToken, UserController.updateCartQuantity);
+router.put("/updateAddress", verifyAccessToken, UserController.updateAddress);
 
 module.exports = router;

@@ -46,10 +46,9 @@ function AppContent() {
           <Route path={path.PROFILE} element={<Profile />} />
           <Route path={path.PRODUCTCA} element={<ProductCa />} />
           <Route path={path.DETAILCART} element={<DetailCart />} />
-          <Route path={path.CHECKOUT} element={<CheckOut />} />
-          <Route path={path.ALL} element={<Home />} />
         </Route>
-
+        <Route path={path.CHECKOUT} element={<CheckOut />} />
+        <Route path={path.ALL} element={<Home />} />
         <Route path={path.RESET_PASSWORD} element={<ResetPassword />} />
         <Route path={path.FINAl_REGISTER} element={<FinalRegister />} />
         <Route path={path.LOGIN} element={<Login />} />

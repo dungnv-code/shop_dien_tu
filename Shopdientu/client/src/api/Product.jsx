@@ -45,3 +45,8 @@ export const Ratings = async (data) => {
     const response = await axios.put(`/product/ratings`, data);
     return response;
 }
+
+export const SaveOrder = async (data) => {
+    const response = await axios.post(`/order/createOrder`, data);
+    return response;
+}
