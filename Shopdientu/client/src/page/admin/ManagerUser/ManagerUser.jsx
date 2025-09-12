@@ -36,7 +36,6 @@ const ManagerUser = () => {
                 const response = await GetAllUsers({ limit, page: currentPage });
                 setUsers(response.userDatas || []);
                 setTotalPages(response.totalPages || 1);
-
             } catch (error) {
             }
         }
@@ -148,9 +147,6 @@ const ManagerUser = () => {
             }
         });
     }
-
-
-
 
     return (
         <div className="admin-layout p-3">

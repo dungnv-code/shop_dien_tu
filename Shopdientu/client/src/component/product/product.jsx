@@ -10,7 +10,7 @@ import { toSlug } from "../../ultils/helper";
 import WithBaseComponent from "../../HOC/withBaseComponent";
 import { QuickView } from "../index"
 import { useState, useEffect, useRef } from "react";
-import { AddCartUser } from "../../api/User";
+import { AddCartUser, UpdateWishList } from "../../api/User";
 import Swal from "sweetalert2";
 import { useSelector } from "react-redux";
 import { getCurrent } from "../../redux/userSlice/asyncActionUser";
@@ -18,10 +18,27 @@ const Product = ({ dataProduct, navigate, dispatch }) => {
     const price = dataProduct.price.toLocaleString();
     const { current } = useSelector((state) => state.user)
     const modalRef = useRef(null);
-    const hanleClickWishList = (e) => {
+    const hanleClickWishList = async (e) => {
         e.preventDefault()
-
+        try {
+            const respon = await UpdateWishList(dataProduct?._id);
+            if (respon?.success) {
+                await dispatch(getCurrent())   // cập nhật Redux
+                Swal.fire({
+                    title: respon?.mes || 'Cập nhật danh sách yêu thích thành công',
+                    icon: 'success',
+                    timer: 1000,
+                    showConfirmButton: false
+                })
+            }
+        } catch (err) {
+            Swal.fire({
+                title: err?.mes || 'Đã có lỗi xảy ra',
+                icon: 'error',
+            })
+        }
     }
+
 
     const hanleQuickView = (e) => {
         e.preventDefault()
@@ -51,7 +68,6 @@ const Product = ({ dataProduct, navigate, dispatch }) => {
                     showConfirmButton: false // ẩn nút OK
                 })
             } catch (err) {
-
                 Swal.fire({
                     title: err?.mes || 'Đã có lỗi xảy ra',
                     icon: 'error',
@@ -108,7 +124,23 @@ const Product = ({ dataProduct, navigate, dispatch }) => {
                             data-bs-placement="top"
                             title="Thêm vào yêu thích"
                         >
-                            <FaHeart className={clsx(styles.icon_style)} />
+                            {
+                                current?.wishlist?.some((item) => item.toString() === dataProduct._id) ? (
+                                    <FaHeart
+                                        title="Đã có trong danh sách yêu thích"
+                                        style={{ color: "red" }}
+                                        onClick={(e) => hanleClickWishList(e)}   // thêm toggle
+                                        className={clsx(styles.icon_style)}
+                                    />
+                                ) : (
+                                    <FaHeart
+                                        title="Thêm vào danh sách yêu thích"
+                                        onClick={(e) => hanleClickWishList(e)}   // sửa lại cho đúng
+                                        className={clsx(styles.icon_style)}
+                                    />
+                                )
+                            }
+
                         </div>
                         <div
                             data-bs-toggle="tooltip"

@@ -69,3 +69,8 @@ export const UpdateQuantityCart = async (id, data) => {
     const response = await axios.post(`user/updateCartQuantity/${id}`, data);
     return response;
 }
+
+export const UpdateWishList = async (id) => {
+    const response = await axios.put(`user/updateWishList/${id}`);
+    return response;
+}

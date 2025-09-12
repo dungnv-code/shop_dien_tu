@@ -553,7 +553,45 @@ class UserController {
         });
     });
 
+    updateWishList = asyncHandler(async (req, res) => {
+        const { pid } = req.params; // id của sản phẩm
+        const { _id } = req.user;   // id của user đã đăng nhập
+        try {
+            // Tìm user
+            const user = await User.findById(_id);
+            if (!user) {
+                return res.status(404).json({ success: false, mes: "User not found" });
+            }
 
+            let updatedUser;
+            if (user.wishlist?.includes(pid)) {
+                // Nếu đã có sản phẩm trong wishlist → xóa đi
+                updatedUser = await User.findByIdAndUpdate(
+                    _id,
+                    { $pull: { wishlist: pid } },
+                    { new: true }
+                );
+            } else {
+                // Nếu chưa có → thêm vào
+                updatedUser = await User.findByIdAndUpdate(
+                    _id,
+                    { $push: { wishlist: pid } },
+                    { new: true }
+                );
+            }
+
+            res.status(200).json({
+                success: true,
+                wishList: updatedUser
+            });
+
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                mes: error.message
+            });
+        }
+    });
 }
 
 module.exports = new UserController;

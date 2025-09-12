@@ -18,8 +18,8 @@ var OrderSchema = new mongoose.Schema({
     coupon: { type: mongoose.Types.ObjectId, ref: "coupons" },
     status: {
         type: String,
-        default: "Đang sử lí",
-        enum: ["Đang sử lí", "Đã giao", "Đã huỷ"],
+        default: "Đang xử lí",
+        enum: ["Đang xử lí", "Đã giao", "Đã huỷ"],
     },
     paymentIntent: {},
     orderBy: { type: mongoose.Types.ObjectId, ref: "User" }
