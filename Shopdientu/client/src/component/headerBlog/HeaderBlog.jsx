@@ -2,8 +2,8 @@ import { getBlogCategorisAll } from "../../api/Blog";
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import "./HeaderBlog.css";
-
-const HeaderBlog = () => {
+import { path } from "../../ultils/path";
+const HeaderBlog = ({ setCategori }) => {
     const [blogCategori, setBlogCategori] = useState([]);
     const [active, setActive] = useState(0);
 
@@ -12,6 +12,7 @@ const HeaderBlog = () => {
             const res = await getBlogCategorisAll();
             if (res.success) {
                 setBlogCategori(res.data);
+                setCategori(res.data[0]?.title || "");
             }
         };
         fetchBlogCategori();
@@ -25,12 +26,16 @@ const HeaderBlog = () => {
                 </span>
                 {blogCategori.map((item, index) => (
                     <NavLink
+                        to={path.BLOG}
                         key={index}
-                        onClick={() => setActive(index)}
+                        onClick={() => {
+                            setActive(index);
+                            setCategori(item.title);
+                        }}
                         className={
                             active === index
                                 ? "btn btn-primary m-1"
-                                : "btn btn-outline-dark m-1"
+                                : "btn btn-outline-info m-1"
                         }
                     >
                         {item.title}

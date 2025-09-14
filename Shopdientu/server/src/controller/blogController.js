@@ -133,13 +133,23 @@ class BlogControlller {
 
     getDetailBlog = asyncHandler(async (req, res) => {
         const { bid } = req.params;
-        const excludeFiedl = "-refreshToken -password -updatedAt -createdAt -passwordChangeAt -passwordChangedAt";
-        const blogDetail = await Blog.findByIdAndUpdate(bid, { $inc: { numberView: 1 } }, { new: true }).populate("dislikes", excludeFiedl).populate("likes", excludeFiedl);
+        const excludeField = "-refreshToken -password -updatedAt -createdAt -passwordChangeAt -passwordChangedAt";
+
+        const blogDetail = await Blog.findByIdAndUpdate(
+            bid,
+            { $inc: { numberView: 1 } },
+            { new: true }
+        )
+            .populate("author", "name email avatar")   // 👈 populate tác giả, chỉ lấy vài field cần thiết
+            .populate("dislikes", excludeField)
+            .populate("likes", excludeField);
+
         return res.status(200).json({
             mes: "Success",
             data: blogDetail,
-        })
-    })
+        });
+    });
+
 
     deleteBlog = asyncHandler(async (req, res) => {
         const { bid } = req.params

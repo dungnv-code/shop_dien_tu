@@ -30,4 +30,10 @@ export const UpdateStatusBlog = async (id, data) => {
     return repon;
 }
 
+export const getDetailBlog = async (id) => {
+    const repon = await axios.get(`blog/getDetailBlog/${id}`);
+    return repon;
+}
+
+
 

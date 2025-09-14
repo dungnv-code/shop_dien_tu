@@ -3,12 +3,15 @@ import './App.css';
 import { path } from "./ultils/path";
 import {
   Public, Home, Login, Blog, DetailProduct, Servicer,
-  FAQ, Contact, FinalRegister, ResetPassword, Profile, ProductCa, DetailCart, CheckOut
+  FAQ, Contact, FinalRegister, ResetPassword, Profile,
+  ProductCa, DetailCart, CheckOut
 } from "./page/public";
 
 import { AdminLayout, Dashboard, CreateProduct, ManagerUser, ManagerProduct, ManagerOrder, ManagerBlog } from "./page/admin";
 
 import { MemberLayout, Personal, Mycart, History, Wishlist, BlogUser } from "./page/member";
+
+import { BlogDetail, ContentBlog } from "./component"
 
 import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -40,7 +43,10 @@ function AppContent() {
 
         <Route path={path.PUBLIC} element={<Public />}>
           <Route path={path.HOME} element={<Home />} />
-          <Route path={path.BLOG} element={<Blog />} />
+          <Route path={path.BLOG} element={<Blog />}>
+            <Route index element={<ContentBlog />} />
+            <Route path={path.BLOG_DETAIL} element={<BlogDetail />} />
+          </Route>
           <Route path={path.DETAIL_PRODUCT_CATEGORI_PID_TITLE} element={<DetailProduct />} />
           <Route path={path.FAQ} element={<FAQ />} />
           <Route path={path.CONTACT} element={<Contact />} />

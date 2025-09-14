@@ -203,15 +203,23 @@ const BlogUser = () => {
                                             height: 500,
                                             menubar: true,
                                             plugins: [
-                                                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-                                                'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-                                                'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
+                                                "advlist", "autolink", "lists", "link", "image", "charmap", "preview",
+                                                "anchor", "searchreplace", "visualblocks", "code", "fullscreen",
+                                                "insertdatetime", "media", "table", "code", "help", "wordcount"
                                             ],
-                                            toolbar: 'undo redo | blocks | ' +
-                                                'bold italic forecolor | alignleft aligncenter ' +
-                                                'alignright alignjustify | bullist numlist outdent indent | ' +
-                                                'removeformat | help',
-                                            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
+                                            toolbar: "undo redo | blocks | " +
+                                                "bold italic forecolor | alignleft aligncenter " +
+                                                "alignright alignjustify | bullist numlist outdent indent | " +
+                                                "removeformat | help",
+
+                                            // 👇 ép ảnh tự full width
+                                            content_style: `
+    img { width: 100% !important; height: auto !important; }
+  `,
+
+                                            // 👇 Bỏ thuộc tính inline width/height khi user chèn ảnh
+                                            image_dimensions: false,
+                                            object_resizing: false,
                                         }}
                                     ></Editor>
                                 </div>

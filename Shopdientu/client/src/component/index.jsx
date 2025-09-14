@@ -19,3 +19,6 @@ export { default as MemberSibar } from "./MemberSibar/MemberSibar";
 export { default as QuickView } from "./quickView/QuickView";
 export { default as PayPal } from "./paypal/paypal";
 export { default as HeaderBlog } from "./headerBlog/HeaderBlog"
+export { default as ContentBlog } from "./ContentBlog/ContentBlog"
+export { default as BlogDetail } from "./BlogDetail/BlogDetail"
+export { default as Blogs } from "./Blogs/Blogs"
