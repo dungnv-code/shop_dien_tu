@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { getDetailBlog } from "../../api/Blog";
 import { useEffect, useState } from "react";
-
+import "./BlogDetail.css"
 
 const BlogDetail = () => {
     const { bid } = useParams();
