@@ -197,12 +197,19 @@ class UserController {
 
     getCurrent = asyncHandler(async (req, res) => {
         const { _id } = req.user
-        const user = await User.findById(_id).select('-refreshToken -password')
+        const user = await User.findById(_id)
+            .select('-refreshToken -password')
+            .populate({
+                path: 'wishlist',
+
+            })
+
         return res.status(200).json({
             success: user ? true : false,
             rs: user ? user : 'Không tìm thấy người dùng'
         })
     })
+
 
     refreshAccessToken = asyncHandler(async (req, res) => {
         // Lấy token từ cookies
@@ -408,7 +415,6 @@ class UserController {
         });
     });
 
-
     updateUserByAdmin = asyncHandler(async (req, res) => {
         const { uid } = req.params
         if (Object.keys(req.body).length === 0) throw new Error('Thiếu đầu vào')
@@ -510,6 +516,7 @@ class UserController {
         }
 
         res.status(200).json({
+            success: true,
             mes: "Đã xóa sản phẩm khỏi giỏ hàng thành công",
             cart: user.cart,
         });

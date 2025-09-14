@@ -39,7 +39,6 @@ const Product = ({ dataProduct, navigate, dispatch }) => {
         }
     }
 
-
     const hanleQuickView = (e) => {
         e.preventDefault()
         const modal = new window.bootstrap.Modal(modalRef.current);
@@ -105,8 +104,8 @@ const Product = ({ dataProduct, navigate, dispatch }) => {
             <div style={{ width: "100%", position: "relative", fontSize: "14px" }} className={clsx(styles.border_shadow, "h-100", "p-3")}>
                 <div className="p-1" style={{ position: "relative" }}>
                     {
-                        dataProduct.image ? <Link to={`/${toSlug(dataProduct.category)}/${dataProduct._id}/${dataProduct.slug}`}> <img src={dataProduct.image} style={{ objectFit: "contain" }} width={"100%"} height={"163px"} alt="amh"></img></Link>
-                            : <Link to={`/${toSlug(dataProduct.category)}/${dataProduct._id}/${dataProduct.slug}`}><img src="https://i.pinimg.com/736x/fb/c4/87/fbc487b4b3a80a130c52dcb5c1bd7bee.jpg" style={{ objectFit: "contain" }} width={"100%"} height={"163px"} alt="amh"></img></Link>
+                        dataProduct.image ? <Link to={`/${toSlug(dataProduct?.category)}/${dataProduct._id}/${dataProduct.slug}`}> <img src={dataProduct?.image} style={{ objectFit: "contain" }} width={"100%"} height={"163px"} alt="amh"></img></Link>
+                            : <Link to={`/${toSlug(dataProduct?.category)}/${dataProduct?._id}/${dataProduct?.slug}`}><img src="https://i.pinimg.com/736x/fb/c4/87/fbc487b4b3a80a130c52dcb5c1bd7bee.jpg" style={{ objectFit: "contain" }} width={"100%"} height={"163px"} alt="amh"></img></Link>
                     }
                     <div
                         className={clsx(styles.hover_icon)}
@@ -125,7 +124,7 @@ const Product = ({ dataProduct, navigate, dispatch }) => {
                             title="Thêm vào yêu thích"
                         >
                             {
-                                current?.wishlist?.some((item) => item.toString() === dataProduct._id) ? (
+                                current?.wishlist?.some((item) => item._id.toString() === dataProduct._id) ? (
                                     <FaHeart
                                         title="Đã có trong danh sách yêu thích"
                                         style={{ color: "red" }}

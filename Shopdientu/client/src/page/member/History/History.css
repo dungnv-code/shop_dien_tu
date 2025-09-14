@@ -1,0 +1,72 @@
+.history-wrapper {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.history-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.history-filter {
+    width: 200px;
+    border-radius: 8px;
+}
+
+.history-table {
+    border: none;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
+.history-table thead {
+    background: #f1f3f5;
+    color: #495057;
+    font-weight: 600;
+}
+
+.history-table th {
+    padding: 12px;
+    text-align: center;
+}
+
+.history-table tbody tr {
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+}
+
+.history-table tbody tr:hover {
+    transform: translateY(-2px);
+    background: #f8f9fa;
+}
+
+.history-table td {
+    padding: 14px;
+    vertical-align: middle;
+}
+
+.product-list {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+.product-list li {
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+}
+
+.product-title {
+    font-weight: 500;
+    color: #212529;
+}
+
+.status-badge {
+    font-size: 0.9rem;
+    padding: 6px 12px;
+    border-radius: 20px;
+}

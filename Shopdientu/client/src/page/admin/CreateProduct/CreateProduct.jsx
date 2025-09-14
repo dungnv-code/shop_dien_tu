@@ -9,7 +9,6 @@ const CreateProduct = () => {
     const category = useSelector(state => state.app.categoris)
     const [preview, setPreview] = useState(null);
 
-
     const [dataInput, setDatainput] = useState({
         title: "",
         price: 0,

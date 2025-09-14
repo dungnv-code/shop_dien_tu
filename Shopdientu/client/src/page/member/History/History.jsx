@@ -1,7 +1,9 @@
-import { getOrderUser } from "../../../api/Oder"
+import { getOrderUser, updateStatusOrderUser } from "../../../api/Oder"
 import { useState, useEffect } from "react"
 import { useSelector } from "react-redux"
 import { PaginationCustom } from "../../../component/";
+import "./History.css"
+import Swal from "sweetalert2";
 const History = () => {
     const { current } = useSelector((state) => state.user)
     const [orderUser, setOrderUser] = useState([])
@@ -13,8 +15,6 @@ const History = () => {
     const [status, setStatus] = useState(null)
 
     const [refresh, setRefresh] = useState(false)
-
-
 
     useEffect(() => {
         if (!current?._id) return
@@ -40,75 +40,120 @@ const History = () => {
         }
         fetchOrderUser()
         return () => { isMounted = false }
-    }, [current?._id, limit, currentPage, status])
+    }, [current?._id, limit, currentPage, status, refresh])
+
+    const hanleUpdateStatusUser = async (id) => {
+        const reponse = await updateStatusOrderUser(id, { status: "Đã huỷ" })
+        if (reponse?.success) {
+            Swal.fire({
+                icon: "success",
+                title: "Huỷ đơn hàng thành công",
+                showConfirmButton: false,
+                timer: 2000,
+            });
+            setRefresh(!refresh)
+        }
+    }
 
     return (
-        <div className="member-layout">
-            <h1>Lịch sử mua hàng</h1>
+        <div className="history-wrapper">
+            <h1 className="history-title">Lịch sử mua hàng</h1>
             <hr />
             <div className="d-flex justify-content-end me-3">
-                <select onChange={(e) => {
-                    if (e.target.value == "") {
-                        setStatus(null)
-                    } else {
-                        setStatus(e.target.value)
-                    }
-                }} className="form-control" defaultValue="" style={{ width: "15%" }} >
-                    <option value="Đã huỷ">Đã huỷ</option>
+                <select
+                    onChange={(e) => {
+                        if (e.target.value == "") setStatus(null);
+                        else setStatus(e.target.value);
+                    }}
+                    className="form-select history-filter"
+                    defaultValue=""
+                >
+                    <option value="">Tất cả</option>
                     <option value="Đang xử lí">Đang xử lí</option>
                     <option value="Đã giao">Đã giao</option>
-                    <option value="">Tất cả</option>
+                    <option value="Đã huỷ">Đã huỷ</option>
                 </select>
-
             </div>
-            <div className="p-3">
-                <table className="table">
+
+            <div className="table-responsive p-3">
+                <table className="table history-table align-middle">
                     <thead>
                         <tr>
-                            <th>Stt</th>
+                            <th>STT</th>
                             <th>Sản phẩm</th>
                             <th>Trạng thái</th>
                             <th>Tổng giá</th>
                             <th>Ngày đặt</th>
+                            <th>Hoạt động</th>
                         </tr>
                     </thead>
                     <tbody>
                         {orderUser?.map((order, index) => (
                             <tr key={order._id}>
-                                <td>{index + 1}</td>
+                                <td>{(currentPage - 1) * limit + index + 1}</td>
                                 <td>
-                                    <ul>
+                                    <ul className="product-list">
                                         {order.products?.map((p) => (
                                             <li key={p._id}>
-                                                {p.product?.title || p.product} -{" "}
-                                                <b>{p?.size}</b>
-                                                <b>{p?.color}</b>
-                                                <b>{p.price?.toLocaleString()}đ</b>
+                                                <span className="product-title">
+                                                    {p.product?.title || p.product}
+                                                </span>
+                                                <span className="badge bg-light text-dark ms-2">
+                                                    {p?.size}
+                                                </span>
+                                                <span className="badge bg-secondary ms-2">
+                                                    {p?.color}
+                                                </span>
+                                                <span className="fw-bold text-primary ms-2">
+                                                    {p.price?.toLocaleString()}đ
+                                                </span>
                                             </li>
                                         ))}
                                     </ul>
                                 </td>
-                                <td>{order.status}</td>
-                                <td>{order.total?.toLocaleString()}$</td>
+                                <td>
+                                    <span
+                                        className={`badge status-badge ${order.status === "Đã giao"
+                                            ? "bg-success"
+                                            : order.status === "Đang xử lí"
+                                                ? "bg-warning text-dark"
+                                                : "bg-danger"
+                                            }`}
+                                    >
+                                        {order.status}
+                                    </span>
+                                </td>
+                                <td className="fw-bold text-end text-primary">
+                                    {order.total?.toLocaleString()}$
+                                </td>
                                 <td>
                                     {new Date(order.createdAt).toLocaleDateString("vi-VN", {
                                         day: "2-digit",
                                         month: "2-digit",
                                         year: "numeric",
                                         hour: "2-digit",
-                                        minute: "2-digit"
+                                        minute: "2-digit",
                                     })}
+                                </td>
+                                <td>
+                                    {(order?.status == "Đã giao" || order?.status == "Đã huỷ") ? <button className="btn btn-danger" disabled >Huỷ đơn</button> : <button className="btn btn-danger" onClick={() => { hanleUpdateStatusUser(order?._id) }} >Huỷ đơn</button>}
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
-                {
-                    totalPages > 0 && <PaginationCustom currentPage={currentPage}
-                        setCurrentPage={setCurrentPage} limit={limit} totalPages={totalPages} />
-                }
             </div>
+
+            {totalPages > 0 && (
+                <PaginationCustom
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                    limit={limit}
+                    totalPages={totalPages}
+                />
+            )}
         </div>
+
     )
 }
 

@@ -30,12 +30,16 @@ var BlogSchema = new mongoose.Schema({
     likes: [{ type: mongoose.Types.ObjectId, ref: "User" }],
     dislikes: [{ type: mongoose.Types.ObjectId, ref: "User" }],
     image: { type: String, default: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLb8GmXKz4-VIiuD5WRN-XvZkVYnDkLg1oKQ&s" },
-    author: { type: String, default: "Admin" }
+    author: { type: mongoose.Types.ObjectId, ref: "User" },
+    status: {
+        type: String,
+        default: "Chờ xét duyệt",
+        enum: ["Chờ xét duyệt", "Đã duyệt"],
+    }
 }, {
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
 });
 
-//Export the model
 module.exports = mongoose.model('Blogs', BlogSchema);

@@ -6,9 +6,9 @@ import {
   FAQ, Contact, FinalRegister, ResetPassword, Profile, ProductCa, DetailCart, CheckOut
 } from "./page/public";
 
-import { AdminLayout, Dashboard, CreateProduct, ManagerUser, ManagerProduct, ManagerOrder } from "./page/admin";
+import { AdminLayout, Dashboard, CreateProduct, ManagerUser, ManagerProduct, ManagerOrder, ManagerBlog } from "./page/admin";
 
-import { MemberLayout, Personal, Mycart, History, Wishlist } from "./page/member";
+import { MemberLayout, Personal, Mycart, History, Wishlist, BlogUser } from "./page/member";
 
 import { Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -28,12 +28,14 @@ function AppContent() {
           <Route path={path.MANAGER_USER} element={<ManagerUser />} />
           <Route path={path.MANAGER_ORDER} element={<ManagerOrder />} />
           <Route path={path.CREATE_PRODUCT} element={<CreateProduct />} />
+          <Route path={path.MANAGER_BLOG} element={<ManagerBlog />} />
         </Route>
         <Route path={path.MEMBER} element={<MemberLayout />}>
           <Route path={path.PERSONAL} element={<Personal />} />
           <Route path={path.MYCART} element={<Mycart />} />
           <Route path={path.WISHLIST} element={<Wishlist />} />
           <Route path={path.HISTORY} element={<History />} />
+          <Route path={path.BLOG_USER} element={<BlogUser />} />
         </Route>
 
         <Route path={path.PUBLIC} element={<Public />}>

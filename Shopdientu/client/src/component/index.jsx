@@ -18,3 +18,4 @@ export { default as Adminsibar } from "./adminSibar/Adminsibar";
 export { default as MemberSibar } from "./MemberSibar/MemberSibar";
 export { default as QuickView } from "./quickView/QuickView";
 export { default as PayPal } from "./paypal/paypal";
+export { default as HeaderBlog } from "./headerBlog/HeaderBlog"

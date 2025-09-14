@@ -1,7 +1,7 @@
 import "./Adminsibar.css";
 import { path } from "../../ultils/path";
 import { NavLink } from "react-router-dom";
-import { FaUsers, FaBox, FaPlus, FaShoppingCart, FaChartBar } from "react-icons/fa";
+import { FaUsers, FaBox, FaPlus, FaShoppingCart, FaChartBar, FaBlog } from "react-icons/fa";
 const Adminsibar = () => {
     return (
         <>
@@ -42,6 +42,11 @@ const Adminsibar = () => {
                     <li className="nav-item">
                         <NavLink className="nav-link" to={`${path.ADMIN}/${path.DASHBOARD}`}>
                             <FaChartBar /> Dashboard
+                        </NavLink>
+                    </li>
+                    <li className="nav-item">
+                        <NavLink className="nav-link" to={`${path.ADMIN}/${path.MANAGER_BLOG}`}>
+                            <FaBlog /> Quản lí bài viết
                         </NavLink>
                     </li>
                 </ul>

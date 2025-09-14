@@ -1,7 +1,7 @@
 import "./MemberSibar.css";
 import { path } from "../../ultils/path";
 import { NavLink } from "react-router-dom";
-import { FaHeart, FaShoppingCart, FaRegUser, FaHistory } from "react-icons/fa";
+import { FaHeart, FaShoppingCart, FaRegUser, FaHistory, FaBlog } from "react-icons/fa";
 import { useSelector } from "react-redux";
 const MemberSibar = () => {
     const { current } = useSelector(state => state.user);
@@ -13,13 +13,23 @@ const MemberSibar = () => {
                 style={{ top: "0", left: "0", width: "20%" }}
             >
                 <div className="container-fluid">
-                    <a className="navbar-brand" href="#">
+                    <a className="navbar-brand mx-auto" href="#">
                         <div className="text-center">
-                            <img src={current.image} style={{ width: "80%", borderRadius: "50%" }}></img>
+                            <img
+                                src={current.image}
+                                alt="avatar"
+                                className="rounded-circle img-fluid"
+                                style={{
+                                    width: "100%",
+                                    maxWidth: "180px",
+                                    aspectRatio: "1 / 1",
+                                    objectFit: "cover"
+                                }}
+                            />
                             <h5 className="p-2">Cá nhân</h5>
                         </div>
-
                     </a>
+
                 </div>
                 <ul className="nav flex-column w-100">
                     <li className="nav-item">
@@ -44,6 +54,11 @@ const MemberSibar = () => {
                     <li className="nav-item">
                         <NavLink className="nav-link" to={`${path.MEMBER}/${path.HISTORY}`}>
                             <FaHistory /> Lịch sử
+                        </NavLink>
+                    </li>
+                    <li className="nav-item">
+                        <NavLink className="nav-link" to={`${path.MEMBER}/${path.BLOG_USER}`}>
+                            <FaBlog /> Bài Viết
                         </NavLink>
                     </li>
                 </ul>

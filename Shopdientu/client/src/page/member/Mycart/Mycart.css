@@ -1,0 +1,29 @@
+.mycart-container {
+    max-width: 900px;
+    margin: auto;
+}
+
+.cart-item {
+    border-radius: 12px;
+    transition: transform 0.2s ease;
+}
+
+.cart-item:hover {
+    transform: translateY(-3px);
+}
+
+.cart-item-img {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #eee;
+}
+
+.cart-total h5 {
+    font-size: 1.2rem;
+}
+
+.btn-primary {
+    border-radius: 10px;
+}

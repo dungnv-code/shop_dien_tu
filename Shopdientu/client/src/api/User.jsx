@@ -70,7 +70,7 @@ export const UpdateQuantityCart = async (id, data) => {
     return response;
 }
 
-export const UpdateWishList = async (id) => {
-    const response = await axios.put(`user/updateWishList/${id}`);
+export const UpdateWishList = async (id, data) => {
+    const response = await axios.put(`user/updateWishList/${id}`, data);
     return response;
 }
