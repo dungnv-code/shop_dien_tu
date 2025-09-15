@@ -35,5 +35,17 @@ export const getDetailBlog = async (id) => {
     return repon;
 }
 
+export const likeBlog = async (id) => {
+    const repon = await axios.post(`blog/likeBlog/${id}`);
+    return repon;
+}
+
+export const dislikeBlog = async (id) => {
+    const repon = await axios.post(`blog/dislikeBlog/${id}`);
+    return repon;
+}
+
+
+
 
 
