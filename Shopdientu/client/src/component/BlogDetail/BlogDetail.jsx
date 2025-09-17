@@ -65,13 +65,10 @@ const BlogDetail = () => {
             console.error("Error disliking blog:", error);
         }
     };
-
     if (!blog) return <div>Đang tải...</div>;
-
     return (
         <div>
             <h1>{blog.title}</h1>
-
             <div
                 className="blog-meta-row"
                 style={{ fontSize: "14px", color: "#555", marginBottom: "20px" }}
@@ -81,22 +78,18 @@ const BlogDetail = () => {
                     - {new Date(blog.createdAt).toLocaleDateString("vi-VN")}
                 </span>
             </div>
-
             <div
                 className="blog-content"
                 dangerouslySetInnerHTML={{ __html: blog.description }}
             ></div>
-
             <div className="d-flex gap-2 mt-3">
                 <button
                     type="button"
                     className={`btn ${userLiked ? "btn-success" : "btn-primary"}`}
                     onClick={handleLikeBlog}
-
                 >
                     <AiFillLike /> Like {blog.likes?.length || 0}
                 </button>
-
                 <button
                     type="button"
                     className={`btn ${userDisliked ? "btn-danger" : "btn-outline-info"}`}

@@ -3,7 +3,6 @@ import { useEffect, memo } from "react";
 
 const Footer = () => {
     useEffect(() => {
-        // Khởi tạo SDK Facebook
         if (!window.FB) {
             window.fbAsyncInit = function () {
                 window.FB.init({

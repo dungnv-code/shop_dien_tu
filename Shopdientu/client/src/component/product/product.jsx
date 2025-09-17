@@ -15,6 +15,8 @@ import Swal from "sweetalert2";
 import { useSelector } from "react-redux";
 import { getCurrent } from "../../redux/userSlice/asyncActionUser";
 const Product = ({ dataProduct, navigate, dispatch }) => {
+
+    const priceSale = (dataProduct.price - (dataProduct.price * dataProduct.sale / 100)).toLocaleString() || null;
     const price = dataProduct.price.toLocaleString();
     const { current } = useSelector((state) => state.user)
     const modalRef = useRef(null);
@@ -51,7 +53,7 @@ const Product = ({ dataProduct, navigate, dispatch }) => {
             name: dataProduct.title,
             size: dataProduct.size || "",
             color: dataProduct.color || "",
-            price: dataProduct.price,
+            price: dataProduct.sale ? priceSale : dataProduct.price,
             quantity: 1,
             image: dataProduct.image || "",
         };
@@ -177,7 +179,9 @@ const Product = ({ dataProduct, navigate, dispatch }) => {
                     <p><b>{dataProduct.title}</b></p>
                 </div>
                 <div>
-                    <p style={{ color: "red" }}><b>{price} đ</b></p>
+
+                    {dataProduct?.sale ? <p><del>{price} đ </del>  -{dataProduct.sale}%</p> : <p style={{ color: "red" }}><b>{price} đ</b></p>}
+                    {dataProduct?.sale && <p style={{ color: "red" }}><b>{priceSale} đ</b></p>}
                 </div>
                 <div className="d-flex align-items-center">
                     <div>

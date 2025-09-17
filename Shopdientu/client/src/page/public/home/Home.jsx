@@ -66,7 +66,6 @@ const Home = () => {
 
     const fetchProducts = async () => {
         try {
-
             if (tab == 0) {
                 const seed = Number(new Date().toISOString().split("T")[0].replace(/-/g, ''));
                 const response = await getProducts({
@@ -82,6 +81,9 @@ const Home = () => {
                 setHour(Math.floor(diffInSeconds / 3600));
                 setMinute(Math.floor((diffInSeconds % 3600) / 60));
                 setSecond(diffInSeconds % 60);
+                response.productDatas.forEach(item => {
+                    item.sale = import.meta.env.VITE_API_SALE_FASH;
+                })
                 return response.productDatas;
             }
 
@@ -92,6 +94,9 @@ const Home = () => {
                 const response = await getProducts({
                     params: { random: "true", seed, limit: 6, "totalRating[lt]": 3 }
                 });
+                response.productDatas.forEach(item => {
+                    item.sale = import.meta.env.VITE_API_SALE_ONLINE;
+                })
                 return response.productDatas;
             }
 
